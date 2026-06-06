@@ -32,3 +32,6 @@ To update the app later:
 Important:
 
 Keep your JSON sync backup somewhere safe. The hosted files do not store your task data in GitHub.
+
+
+V6 update: Club Academy Scotland claim form now uses a layout matched more closely to the uploaded Word template, including the embedded Specsavers Opticians logo. Upload index.html and service-worker.js together so the PWA cache updates.
