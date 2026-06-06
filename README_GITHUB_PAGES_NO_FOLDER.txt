@@ -1,4 +1,4 @@
-Task Payment Tracker PWA v6 Flat Upload
+Task Payment Tracker PWA v8 Flat Upload
 ========================================
 
 This package is the same PWA build, but all icon files are in the repository root.
@@ -30,4 +30,7 @@ Data note:
 Your saved tasks and bank/profile details remain in the browser storage on each device. Hosting these files does not upload your saved app data to GitHub.
 
 
-V6 update: Club Academy Scotland claim form now uses a layout matched more closely to the uploaded Word template, including the embedded Specsavers Opticians logo. Upload index.html and service-worker.js together so the PWA cache updates.
+V8 update: Club Academy Scotland claim form now uses a layout matched more closely to the uploaded Word template, including the embedded Specsavers Opticians logo. Upload index.html and service-worker.js together so the PWA cache updates.
+
+
+V8 note: app-controlled suggestions have been added for iPhone/Safari. After saving at least one task, those details should appear as suggestions in the Add/Edit form.
