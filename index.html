@@ -1,0 +1,1637 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Task Payment Tracker</title>
+  <style>
+    :root{
+      --bg:#f6f4fb;
+      --panel:#ffffff;
+      --text:#1f1b2e;
+      --muted:#6c647b;
+      --line:#ddd6eb;
+      --brand:#4B0082;
+      --brand2:#FFD700;
+      --soft:#f2eafd;
+      --danger:#b42318;
+      --danger-bg:#fff0ee;
+      --success:#087443;
+      --success-bg:#ecfdf3;
+      --warning:#946200;
+      --warning-bg:#fff7d6;
+      --info:#185abc;
+      --info-bg:#eef4ff;
+      --shadow:0 14px 40px rgba(31, 27, 46, .10);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html, body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #fff8d0 0, transparent 34%), var(--bg);
+      color:var(--text);
+      line-height:1.45;
+    }
+    .app-shell{
+      max-width:1180px;
+      margin:0 auto;
+      padding:18px 14px 90px;
+    }
+    header.hero{
+      background:linear-gradient(135deg, var(--brand), #251045 72%);
+      color:#fff;
+      border-radius:28px;
+      padding:22px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    header.hero:after{
+      content:"";
+      position:absolute;
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      right:-44px;
+      top:-48px;
+      background:rgba(255,215,0,.28);
+    }
+    .hero-row{
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+      justify-content:space-between;
+      position:relative;
+      z-index:1;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:clamp(1.55rem, 4vw, 2.3rem);
+      letter-spacing:-.04em;
+    }
+    .hero p{margin:0;color:rgba(255,255,255,.82);max-width:760px}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .tabs{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(0,1fr));
+      gap:8px;
+      margin:14px 0;
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(246,244,251,.92);
+      padding:9px 0;
+      backdrop-filter: blur(14px);
+    }
+    .tab{
+      border:1px solid var(--line);
+      background:var(--panel);
+      color:var(--text);
+      border-radius:999px;
+      padding:10px 8px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 5px 14px rgba(31,27,46,.05);
+      white-space:nowrap;
+    }
+    .tab.active{
+      background:var(--brand);
+      color:#fff;
+      border-color:var(--brand);
+    }
+    .grid{
+      display:grid;
+      gap:14px;
+    }
+    .grid.two{grid-template-columns: 1.1fr .9fr}
+    .grid.three{grid-template-columns: repeat(3, minmax(0,1fr))}
+    .grid.four{grid-template-columns: repeat(4, minmax(0,1fr))}
+    .card{
+      background:rgba(255,255,255,.93);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:0 8px 26px rgba(31,27,46,.06);
+    }
+    .card h2,.card h3{margin:0 0 12px;letter-spacing:-.02em}
+    .muted{color:var(--muted)}
+    .small{font-size:.88rem}
+    label{display:block;font-size:.86rem;font-weight:800;margin:10px 0 5px;color:#352b4b}
+    input, textarea, select{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      color:var(--text);
+      padding:11px 12px;
+      font:inherit;
+      outline:none;
+    }
+    textarea{min-height:90px;resize:vertical}
+    input:focus, textarea:focus, select:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(75,0,130,.10)}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+    .form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .span-2{grid-column:span 2}
+    .span-3{grid-column:span 3}
+    button, .button{
+      border:0;
+      background:var(--brand);
+      color:#fff;
+      border-radius:12px;
+      padding:10px 13px;
+      font:inherit;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      text-decoration:none;
+      min-height:42px;
+    }
+    button:hover, .button:hover{filter:brightness(.96)}
+    button.secondary, .button.secondary{background:#fff;color:var(--brand);border:1px solid var(--line)}
+    button.gold{background:var(--brand2);color:#271b00}
+    button.danger{background:var(--danger)}
+    button.success{background:var(--success)}
+    button.ghost{background:transparent;color:var(--brand);border:1px dashed var(--line)}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .stat{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:17px;
+      padding:14px;
+    }
+    .stat .value{font-size:1.65rem;font-weight:900;letter-spacing:-.04em}
+    .stat .label{color:var(--muted);font-size:.86rem;font-weight:750}
+    .list{display:grid;gap:10px}
+    .task-item{
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:16px;
+      padding:13px;
+      display:grid;
+      gap:9px;
+    }
+    .task-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .task-title{font-weight:900;font-size:1rem}
+    .task-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:.87rem}
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:.78rem;
+      font-weight:850;
+      background:var(--soft);
+      color:var(--brand);
+      border:1px solid rgba(75,0,130,.08);
+      white-space:nowrap;
+    }
+    .badge.success{background:var(--success-bg);color:var(--success)}
+    .badge.warning{background:var(--warning-bg);color:var(--warning)}
+    .badge.danger{background:var(--danger-bg);color:var(--danger)}
+    .badge.info{background:var(--info-bg);color:var(--info)}
+    .toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:end;justify-content:space-between;margin-bottom:12px}
+    .toolbar .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:end;flex:1}
+    .toolbar .filters > div{min-width:150px;flex:1}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden}
+    th,td{text-align:left;border-bottom:1px solid var(--line);padding:10px;vertical-align:top;font-size:.9rem}
+    th{background:#fbf8ff;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#5c5172}
+    tr:last-child td{border-bottom:0}
+    .empty{
+      border:1px dashed var(--line);
+      border-radius:16px;
+      padding:22px;
+      text-align:center;
+      color:var(--muted);
+      background:rgba(255,255,255,.65);
+    }
+    .notice{
+      background:#fff9df;
+      border:1px solid #f2dda1;
+      color:#5a4500;
+      border-radius:15px;
+      padding:12px;
+      font-size:.92rem;
+    }
+    .request-preview{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:22px;
+      min-height:360px;
+      color:#111;
+    }
+    .request-preview h2{margin-top:0}
+    .request-preview table{box-shadow:none;border:1px solid #ddd;border-radius:0}
+    .request-preview th,.request-preview td{border:1px solid #ddd;color:#111}
+    .settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(31,27,46,.45);
+      z-index:900;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:22px 12px;
+      overflow:auto;
+    }
+    .modal{
+      width:min(760px, 100%);
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .modal-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+    .modal-head h2{margin:0}
+    .field-note{font-size:.82rem;color:var(--muted);margin-top:5px}
+    input[readonly]{background:#f8f6fc;color:#4b415e}
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%) translateY(20px);
+      background:#21192f;
+      color:#fff;
+      border-radius:999px;
+      padding:11px 16px;
+      opacity:0;
+      pointer-events:none;
+      transition:.22s ease;
+      box-shadow:var(--shadow);
+      z-index:1000;
+      max-width:92vw;
+      text-align:center;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .hidden{display:none !important}
+    @media(max-width:900px){
+      .grid.two,.grid.three,.grid.four{grid-template-columns:1fr}
+      .hero-row{display:block}
+      .hero-actions{justify-content:flex-start;margin-top:14px}
+      .tabs{grid-template-columns:repeat(3, minmax(0,1fr));overflow-x:auto}
+      .form-grid,.form-grid.three,.settings-grid{grid-template-columns:1fr}
+      .span-2,.span-3{grid-column:span 1}
+      .task-top{display:block}
+      .task-top .btn-row{margin-top:8px}
+      th,td{font-size:.84rem;padding:8px}
+    }
+    @media print{
+      body{background:#fff}
+      .app-shell{padding:0;max-width:none}
+      header,.tabs,.no-print,.toast,.modal-backdrop{display:none !important}
+      .card{border:0;box-shadow:none;padding:0}
+      .request-preview{border:0;padding:0}
+      .print-only{display:block !important}
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero no-print">
+      <div class="hero-row">
+        <div>
+          <h1>Task Payment Tracker</h1>
+          <p>Offline-first job tracker for tasks, calendar entries, payment requests, unpaid follow-up and exports. Data is stored in this browser.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="gold" id="quickAddBtn">Add new task</button>
+          <button class="secondary" id="setupBtn">Setup</button>
+          <button class="secondary" id="backupNowBtn">Backup JSON</button>
+          <button class="secondary" id="shareNowBtn">Share JSON</button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs no-print" aria-label="App sections">
+      <button class="tab active" data-tab="dashboard">Dashboard</button>
+      <button class="tab" data-tab="add">Add/Edit</button>
+      <button class="tab" data-tab="tasks">Tasks</button>
+      <button class="tab" data-tab="payment">Payment Request</button>
+      <button class="tab" data-tab="export">Export</button>
+    </nav>
+
+    <main>
+      <section id="dashboard" class="tab-panel">
+        <div class="grid four">
+          <div class="stat"><div class="value" id="statUpcoming">0</div><div class="label">Upcoming tasks</div></div>
+          <div class="stat"><div class="value" id="statUnpaid">0</div><div class="label">Completed unpaid</div></div>
+          <div class="stat"><div class="value" id="statOverdue">0</div><div class="label">Unpaid for 7+ days</div></div>
+          <div class="stat"><div class="value" id="statPaidMonth">£0.00</div><div class="label">Paid this month</div></div>
+        </div>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card">
+            <h2>Needs attention</h2>
+            <div id="attentionList" class="list"></div>
+          </div>
+          <div class="card">
+            <h2>Upcoming</h2>
+            <div id="upcomingList" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="add" class="tab-panel hidden">
+        <div class="grid two">
+          <div class="card">
+            <h2 id="formTitle">Add task/job</h2>
+            <form id="taskForm">
+              <input type="hidden" id="taskId" />
+              <div class="form-grid">
+                <div>
+                  <label for="jobTitle">Job title / role</label>
+                  <input id="jobTitle" list="jobTitleSuggestions" required placeholder="e.g. Referee, clinician, trainer, consultant" />
+                </div>
+                <div>
+                  <label for="taskTitle">Task title / match / event</label>
+                  <input id="taskTitle" list="taskTitleSuggestions" required placeholder="e.g. Club Academy match, clinic session, training workshop" />
+                </div>
+                <div>
+                  <label for="clientName">Client/company</label>
+                  <input id="clientName" list="clientNameSuggestions" required placeholder="Client or organisation name" />
+                </div>
+                <div>
+                  <label for="contactName">Contact person</label>
+                  <input id="contactName" list="contactNameSuggestions" placeholder="Optional" />
+                </div>
+                <div>
+                  <label for="clientEmail">Client email</label>
+                  <input id="clientEmail" type="email" list="clientEmailSuggestions" placeholder="name@example.com" />
+                </div>
+                <div>
+                  <label for="clientPhone">Phone</label>
+                  <input id="clientPhone" list="clientPhoneSuggestions" placeholder="Optional" />
+                </div>
+                <div>
+                  <label for="location">Location</label>
+                  <input id="location" list="locationSuggestions" placeholder="Address, room, online link or notes" />
+                </div>
+                <div>
+                  <label for="taskDate">Task date</label>
+                  <input id="taskDate" type="date" required />
+                </div>
+                <div>
+                  <label for="startTime">Start time</label>
+                  <input id="startTime" type="time" required />
+                </div>
+                <div>
+                  <label for="endTime">End time</label>
+                  <input id="endTime" type="time" required />
+                </div>
+                <div>
+                  <label for="feeAmount">Agreed payment</label>
+                  <input id="feeAmount" type="number" min="0" step="0.01" placeholder="0.00" />
+                </div>
+                <div>
+                  <label for="currency">Currency</label>
+                  <select id="currency">
+                    <option value="GBP">GBP (£)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="NPR">NPR (रू)</option>
+                    <option value="CAD">CAD ($)</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="claimTravel">Claim travel?</label>
+                  <select id="claimTravel">
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="travelMiles">Travel miles</label>
+                  <input id="travelMiles" type="number" min="0" step="0.1" placeholder="0" />
+                </div>
+                <div>
+                  <label for="travelRate">Mileage rate per mile</label>
+                  <input id="travelRate" type="number" min="0" step="0.01" placeholder="e.g. 0.45" />
+                  <div class="field-note">Defaults from Setup, but can be changed per task.</div>
+                </div>
+                <div>
+                  <label for="travelAmountPreview">Travel claim amount</label>
+                  <input id="travelAmountPreview" readonly value="£0.00" />
+                </div>
+                <div>
+                  <label for="referenceNo">Reference/job number</label>
+                  <input id="referenceNo" list="referenceNoSuggestions" placeholder="Optional" />
+                </div>
+                <div>
+                  <label for="taskStatus">Task status</label>
+                  <select id="taskStatus">
+                    <option value="upcoming">Upcoming</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="paymentStatus">Payment status</label>
+                  <select id="paymentStatus">
+                    <option value="not_requested">Not requested</option>
+                    <option value="requested">Payment requested</option>
+                    <option value="paid">Paid</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="completedDate">Completed date</label>
+                  <input id="completedDate" type="date" />
+                </div>
+                <div>
+                  <label for="paymentRequestedDate">Payment requested date</label>
+                  <input id="paymentRequestedDate" type="date" />
+                </div>
+                <div>
+                  <label for="paidDate">Paid date</label>
+                  <input id="paidDate" type="date" />
+                </div>
+                <div>
+                  <label for="paymentTerms">Payment terms</label>
+                  <input id="paymentTerms" list="paymentTermsSuggestions" placeholder="e.g. Payment within 14 days" />
+                </div>
+                <div class="span-2">
+                  <label for="notes">Task notes</label>
+                  <textarea id="notes" placeholder="Instructions, preparation notes, agreed terms or anything to include in the calendar entry"></textarea>
+                </div>
+              </div>
+              <div class="btn-row" style="margin-top:14px">
+                <button type="submit">Save task</button>
+                <button type="button" class="secondary" id="resetFormBtn">Clear form</button>
+                <button type="button" class="gold" id="calendarFromFormBtn">Generate calendar entry</button>
+              </div>
+            </form>
+          </div>
+          <div class="card">
+            <h2>First draft notes</h2>
+            <div class="notice">
+              This app is designed to work without hosting. It stores records in the browser you use. Use the Device Sync JSON section to move the full app data between your phone and laptop. Previously entered names, emails, roles, task titles and locations are suggested as you type.
+            </div>
+            <h3 style="margin-top:18px">Setup and travel claims</h3>
+            <p class="muted">Use the Setup button to save your name, address, bank details and mileage rate. If travel is claimable for a task, choose Yes and add the miles. The app calculates the travel amount and itemises it in the payment request.</p>
+            <h3>Task calendar entry</h3>
+            <p class="muted">The calendar button downloads an .ics file for the task only. Payment follow-up is handled inside the dashboard, not in your calendar.</p>
+            <h3>Email/payment flow</h3>
+            <p class="muted">After completion, generate a payment request, then choose the general format or the Club Academy Scotland referee claim form. Use Share, Download, Print/Save PDF, or Open Email Draft.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="tasks" class="tab-panel hidden">
+        <div class="card">
+          <div class="toolbar">
+            <div class="filters">
+              <div>
+                <label for="searchTasks">Search</label>
+                <input id="searchTasks" placeholder="Client, job/task title, email, reference" />
+              </div>
+              <div>
+                <label for="filterStatus">Task status</label>
+                <select id="filterStatus">
+                  <option value="all">All</option>
+                  <option value="upcoming">Upcoming</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+              <div>
+                <label for="filterPayment">Payment status</label>
+                <select id="filterPayment">
+                  <option value="all">All</option>
+                  <option value="not_requested">Not requested</option>
+                  <option value="requested">Payment requested</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
+            </div>
+            <button id="addFromTasksBtn" class="gold">Add task</button>
+          </div>
+          <div id="taskList" class="list"></div>
+        </div>
+      </section>
+
+      <section id="payment" class="tab-panel hidden">
+        <div class="grid two">
+          <div class="card no-print">
+            <h2>Generate payment request</h2>
+            <label for="requestTemplateType">Request format</label>
+            <select id="requestTemplateType">
+              <option value="general">General professional payment request</option>
+              <option value="club_academy_scotland_2024">Referee Claim Form: Club Academy Scotland 2024</option>
+            </select>
+            <label for="requestTaskSelect">Choose completed task</label>
+            <select id="requestTaskSelect"></select>
+            <div class="notice" style="margin:12px 0">Your name, address, bank details and mileage rate are pulled from Setup. The Club Academy form uses task title as Match and job title as Type of Official.</div>
+            <div class="settings-grid">
+              <div>
+                <label for="requestFromName">Your name/business</label>
+                <input id="requestFromName" placeholder="Your name or business" />
+              </div>
+              <div>
+                <label for="requestFromEmail">Your email</label>
+                <input id="requestFromEmail" type="email" placeholder="you@example.com" />
+              </div>
+              <div>
+                <label for="requestBankInfo">Payment details</label>
+                <input id="requestBankInfo" placeholder="Bank name, sort code, account number" />
+              </div>
+              <div>
+                <label for="requestDueDays">Due in days</label>
+                <input id="requestDueDays" type="number" min="0" step="1" value="14" />
+              </div>
+            </div>
+            <label for="requestMessage">Email message</label>
+            <textarea id="requestMessage">Dear {contact},
+
+Please find attached my payment request for the completed task: {taskTitle}.
+
+Kind regards,
+{fromName}</textarea>
+            <div class="btn-row" style="margin-top:12px">
+              <button id="refreshRequestBtn">Preview request</button>
+              <button class="secondary" id="printRequestBtn">Print/Save PDF</button>
+              <button class="secondary" id="downloadRequestBtn">Download HTML</button>
+              <button class="secondary" id="shareRequestBtn">Share</button>
+              <button class="gold" id="emailRequestBtn">Open email draft</button>
+              <button class="success" id="markRequestedBtn">Mark requested</button>
+            </div>
+            <p class="muted small">For phone use, Share may attach the generated request in supported apps. If not, use Download HTML or Print/Save PDF, then attach manually.</p>
+          </div>
+          <div class="card">
+            <div id="requestPreview" class="request-preview"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="export" class="tab-panel hidden">
+        <div class="grid two">
+          <div class="card">
+            <h2>Export tasks</h2>
+            <div class="form-grid">
+              <div>
+                <label for="exportPreset">Preset</label>
+                <select id="exportPreset">
+                  <option value="custom">Custom dates</option>
+                  <option value="this_month">This month</option>
+                  <option value="last_month">Last month</option>
+                  <option value="this_year">This year</option>
+                  <option value="all">All tasks</option>
+                </select>
+              </div>
+              <div>
+                <label for="exportBasis">Date basis</label>
+                <select id="exportBasis">
+                  <option value="taskDate">Task date</option>
+                  <option value="completedDate">Completed date</option>
+                  <option value="paidDate">Paid date</option>
+                </select>
+              </div>
+              <div>
+                <label for="exportStart">Start date</label>
+                <input id="exportStart" type="date" />
+              </div>
+              <div>
+                <label for="exportEnd">End date</label>
+                <input id="exportEnd" type="date" />
+              </div>
+            </div>
+            <div class="btn-row" style="margin-top:14px">
+              <button id="downloadCsvBtn">Download CSV</button>
+              <button class="secondary" id="printSummaryBtn">Print summary</button>
+            </div>
+
+            <h3 style="margin-top:18px">Device sync JSON</h3>
+            <div class="notice">
+              Use this when switching between phone and laptop. Export the full sync JSON from the device with the newest data, send it to yourself by AirDrop, email, WhatsApp, iCloud Drive, Google Drive or cable transfer, then import it on the other device. The file includes tasks, setup details and bank details, so share it only through trusted routes.
+            </div>
+            <div class="btn-row" style="margin-top:10px">
+              <button class="secondary" id="downloadJsonBtn">Download full sync JSON</button>
+              <button class="secondary" id="shareJsonBtn">Share full sync JSON</button>
+            </div>
+            <label for="importFile" style="margin-top:14px">Import sync JSON</label>
+            <input id="importFile" type="file" accept="application/json,.json" />
+            <div class="form-grid" style="margin-top:10px">
+              <div>
+                <label for="importMode">Import mode</label>
+                <select id="importMode">
+                  <option value="merge">Merge with this device, recommended</option>
+                  <option value="replace">Replace this device with JSON file</option>
+                </select>
+              </div>
+              <div>
+                <label for="importSettingsMode">Setup/profile</label>
+                <select id="importSettingsMode">
+                  <option value="keep">Keep this device setup</option>
+                  <option value="import">Import setup from JSON</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row" style="margin-top:10px">
+              <button class="secondary" id="importJsonBtn">Import sync JSON</button>
+            </div>
+            <p class="muted small">Merge keeps the newest version of each task using its updated timestamp. If you deleted a task on one device and want the deletion reflected everywhere, use Replace from the device that has the correct final list.</p>
+          </div>
+          <div class="card">
+            <h2>Export preview</h2>
+            <div id="exportPreview"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <datalist id="jobTitleSuggestions"></datalist>
+  <datalist id="taskTitleSuggestions"></datalist>
+  <datalist id="clientNameSuggestions"></datalist>
+  <datalist id="contactNameSuggestions"></datalist>
+  <datalist id="clientEmailSuggestions"></datalist>
+  <datalist id="clientPhoneSuggestions"></datalist>
+  <datalist id="locationSuggestions"></datalist>
+  <datalist id="paymentTermsSuggestions"></datalist>
+  <datalist id="referenceNoSuggestions"></datalist>
+
+  <div id="setupModalBackdrop" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+      <div class="modal-head">
+        <div>
+          <h2 id="setupTitle">Setup</h2>
+          <p class="muted" style="margin:4px 0 0">Save the details used in payment requests and travel calculations.</p>
+        </div>
+        <button class="secondary" id="closeSetupBtn" type="button">Close</button>
+      </div>
+      <div class="notice" style="margin-bottom:12px">These details are stored in this browser only. Bank details are not encrypted, so only save them on a device you trust and back up carefully.</div>
+      <form id="setupForm">
+        <div class="form-grid">
+          <div>
+            <label for="setupFirstName">First name</label>
+            <input id="setupFirstName" autocomplete="given-name" />
+          </div>
+          <div>
+            <label for="setupLastName">Last name</label>
+            <input id="setupLastName" autocomplete="family-name" />
+          </div>
+          <div class="span-2">
+            <label for="setupAddressLine1">Address line 1</label>
+            <input id="setupAddressLine1" autocomplete="address-line1" placeholder="House number and street" />
+          </div>
+          <div>
+            <label for="setupAddressLine2">Address line 2</label>
+            <input id="setupAddressLine2" autocomplete="address-line2" placeholder="Optional" />
+          </div>
+          <div>
+            <label for="setupAddressLine3">Address line 3</label>
+            <input id="setupAddressLine3" autocomplete="address-line3" placeholder="Optional" />
+          </div>
+          <div>
+            <label for="setupAddressTown">Town/City</label>
+            <input id="setupAddressTown" autocomplete="address-level2" />
+          </div>
+          <div>
+            <label for="setupPostCode">Post code</label>
+            <input id="setupPostCode" autocomplete="postal-code" />
+          </div>
+          <div>
+            <label for="setupEmail">Your email</label>
+            <input id="setupEmail" type="email" autocomplete="email" />
+          </div>
+          <div>
+            <label for="setupDefaultCurrency">Default currency</label>
+            <select id="setupDefaultCurrency">
+              <option value="GBP">GBP (£)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="NPR">NPR (रू)</option>
+              <option value="CAD">CAD ($)</option>
+            </select>
+          </div>
+          <div>
+            <label for="setupBankName">Bank name</label>
+            <input id="setupBankName" placeholder="e.g. Barclays, NatWest, Lloyds" />
+          </div>
+          <div>
+            <label for="setupAccountName">Account holder name</label>
+            <input id="setupAccountName" placeholder="Usually your full name" />
+          </div>
+          <div>
+            <label for="setupSortCode">Sort code</label>
+            <input id="setupSortCode" inputmode="numeric" placeholder="00-00-00" />
+          </div>
+          <div>
+            <label for="setupAccountNumber">Account number</label>
+            <input id="setupAccountNumber" inputmode="numeric" placeholder="12345678" />
+          </div>
+          <div>
+            <label for="setupMileageRate">Mileage rate per mile</label>
+            <input id="setupMileageRate" type="number" min="0" step="0.01" placeholder="0.45" />
+            <div class="field-note">Used to calculate travel claims. You can override it inside an individual task.</div>
+          </div>
+          <div>
+            <label for="setupDueDays">Default payment due days</label>
+            <input id="setupDueDays" type="number" min="0" step="1" value="14" />
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:14px">
+          <button type="submit">Save setup</button>
+          <button type="button" class="secondary" id="clearSetupBtn">Clear setup</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = "taskPaymentTracker.v1.tasks";
+    const SETTINGS_KEY = "taskPaymentTracker.v1.settings";
+
+    const $ = (id) => document.getElementById(id);
+    const todayISO = () => new Date().toISOString().slice(0,10);
+    const uid = () => "task_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+
+    let tasks = loadTasks().map(t => ({...t, jobTitle: t.jobTitle || ""}));
+    let settings = loadSettings();
+    let selectedRequestTaskId = null;
+
+    function loadTasks(){
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+      catch(e){ return []; }
+    }
+    function saveTasks(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      renderAll();
+    }
+    function loadSettings(){
+      const defaults = {defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14"};
+      try { return {...defaults, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")}; }
+      catch(e){ return defaults; }
+    }
+    function saveSettings(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+    function showToast(message){
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+    function currencySymbol(code){
+      return ({GBP:"£", USD:"$", EUR:"€", NPR:"रू", CAD:"$"})[code] || "";
+    }
+    function money(amount, currency){
+      const n = Number(amount || 0);
+      return `${currencySymbol(currency)}${n.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    }
+    function travelAmount(t){
+      if(!t || t.claimTravel !== "yes") return 0;
+      return Number(t.travelMiles || 0) * Number(t.travelRate || settings.mileageRate || 0);
+    }
+    function totalAmount(t){
+      return Number(t?.feeAmount || 0) + travelAmount(t);
+    }
+    function profileFullName(){
+      const name = [settings.firstName, settings.lastName].filter(Boolean).join(" ").trim();
+      return name || settings.fromName || "";
+    }
+    function bankDetailsText(){
+      const lines = [];
+      const accountName = settings.accountName || profileFullName();
+      if(accountName) lines.push(`Account name: ${accountName}`);
+      if(settings.bankName) lines.push(`Bank: ${settings.bankName}`);
+      if(settings.sortCode) lines.push(`Sort code: ${settings.sortCode}`);
+      if(settings.accountNumber) lines.push(`Account number: ${settings.accountNumber}`);
+      return lines.join("\n");
+    }
+    function getAddressParts(){
+      const legacy = String(settings.address || "").split(/\n+/).map(x => x.trim()).filter(Boolean);
+      return {
+        line1: settings.addressLine1 || legacy[0] || "",
+        line2: settings.addressLine2 || legacy[1] || "",
+        line3: settings.addressLine3 || legacy[2] || "",
+        town: settings.addressTown || legacy[3] || "",
+        postCode: settings.postCode || legacy[4] || ""
+      };
+    }
+    function profileAddressText(){
+      const a = getAddressParts();
+      return [a.line1, a.line2, a.line3, a.town, a.postCode].filter(Boolean).join("\n");
+    }
+    function fmtDate(iso){
+      if(!iso) return "";
+      const [y,m,d] = iso.split("-");
+      return `${d}/${m}/${y}`;
+    }
+    function fmtDateTime(date, start, end){
+      const t = start ? `${start}${end ? " to " + end : ""}` : "";
+      return `${fmtDate(date)}${t ? " at " + t : ""}`;
+    }
+    function daysBetween(aISO, bISO){
+      if(!aISO || !bISO) return 0;
+      const a = new Date(aISO + "T00:00:00");
+      const b = new Date(bISO + "T00:00:00");
+      return Math.floor((b - a) / 86400000);
+    }
+    function escapeHtml(str){
+      return String(str ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;","\"":"&quot;"})[c]);
+    }
+    function downloadBlob(filename, content, type){
+      const blob = content instanceof Blob ? content : new Blob([content], {type});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 600);
+    }
+    function slug(str){
+      return String(str || "task").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60) || "task";
+    }
+
+    function switchTab(tab){
+      document.querySelectorAll(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+      document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.toggle("hidden", panel.id !== tab));
+      if(tab === "payment") renderRequestOptions();
+      if(tab === "export") renderExportPreview();
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+
+    document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => switchTab(btn.dataset.tab)));
+    $("quickAddBtn").addEventListener("click", () => { resetForm(); switchTab("add"); });
+    $("addFromTasksBtn").addEventListener("click", () => { resetForm(); switchTab("add"); });
+    $("backupNowBtn").addEventListener("click", () => downloadJsonBackup());
+    $("shareNowBtn").addEventListener("click", () => shareJsonBackup());
+    $("setupBtn").addEventListener("click", openSetup);
+    $("closeSetupBtn").addEventListener("click", closeSetup);
+    $("setupModalBackdrop").addEventListener("click", (e) => { if(e.target.id === "setupModalBackdrop") closeSetup(); });
+    $("setupForm").addEventListener("submit", (e) => { e.preventDefault(); saveSetupFromForm(); });
+    $("clearSetupBtn").addEventListener("click", clearSetup);
+
+    function openSetup(){
+      $("setupFirstName").value = settings.firstName || "";
+      $("setupLastName").value = settings.lastName || "";
+      const address = getAddressParts();
+      $("setupAddressLine1").value = address.line1 || "";
+      $("setupAddressLine2").value = address.line2 || "";
+      $("setupAddressLine3").value = address.line3 || "";
+      $("setupAddressTown").value = address.town || "";
+      $("setupPostCode").value = address.postCode || "";
+      $("setupEmail").value = settings.fromEmail || "";
+      $("setupDefaultCurrency").value = settings.defaultCurrency || "GBP";
+      $("setupBankName").value = settings.bankName || "";
+      $("setupAccountName").value = settings.accountName || profileFullName();
+      $("setupSortCode").value = settings.sortCode || "";
+      $("setupAccountNumber").value = settings.accountNumber || "";
+      $("setupMileageRate").value = settings.mileageRate || "0.45";
+      $("setupDueDays").value = settings.dueDays || "14";
+      $("setupModalBackdrop").classList.remove("hidden");
+      $("setupModalBackdrop").setAttribute("aria-hidden", "false");
+    }
+    function closeSetup(){
+      $("setupModalBackdrop").classList.add("hidden");
+      $("setupModalBackdrop").setAttribute("aria-hidden", "true");
+    }
+    function saveSetupFromForm(){
+      settings.firstName = $("setupFirstName").value.trim();
+      settings.lastName = $("setupLastName").value.trim();
+      settings.addressLine1 = $("setupAddressLine1").value.trim();
+      settings.addressLine2 = $("setupAddressLine2").value.trim();
+      settings.addressLine3 = $("setupAddressLine3").value.trim();
+      settings.addressTown = $("setupAddressTown").value.trim();
+      settings.postCode = $("setupPostCode").value.trim();
+      settings.address = profileAddressText();
+      settings.fromEmail = $("setupEmail").value.trim();
+      settings.defaultCurrency = $("setupDefaultCurrency").value || "GBP";
+      settings.bankName = $("setupBankName").value.trim();
+      settings.accountName = $("setupAccountName").value.trim();
+      settings.sortCode = $("setupSortCode").value.trim();
+      settings.accountNumber = $("setupAccountNumber").value.trim();
+      settings.mileageRate = $("setupMileageRate").value || "0";
+      settings.dueDays = $("setupDueDays").value || "14";
+      settings.fromName = profileFullName();
+      settings.paymentDetails = bankDetailsText();
+      saveSettings();
+      if(!$("travelRate").value) $("travelRate").value = settings.mileageRate;
+      fillPaymentSettings();
+      updateTravelPreview();
+      showToast("Setup saved");
+      closeSetup();
+    }
+    function clearSetup(){
+      if(!confirm("Clear saved setup details from this browser?")) return;
+      settings = {defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14"};
+      saveSettings();
+      openSetup();
+      showToast("Setup cleared");
+    }
+
+    function getFormTask(){
+      return {
+        id: $("taskId").value || uid(),
+        jobTitle: $("jobTitle").value.trim(),
+        taskTitle: $("taskTitle").value.trim(),
+        clientName: $("clientName").value.trim(),
+        contactName: $("contactName").value.trim(),
+        clientEmail: $("clientEmail").value.trim(),
+        clientPhone: $("clientPhone").value.trim(),
+        location: $("location").value.trim(),
+        taskDate: $("taskDate").value,
+        startTime: $("startTime").value,
+        endTime: $("endTime").value,
+        feeAmount: $("feeAmount").value,
+        currency: $("currency").value,
+        claimTravel: $("claimTravel").value,
+        travelMiles: $("claimTravel").value === "yes" ? $("travelMiles").value : "",
+        travelRate: $("claimTravel").value === "yes" ? ($("travelRate").value || settings.mileageRate || "0") : "",
+        referenceNo: $("referenceNo").value.trim(),
+        taskStatus: $("taskStatus").value,
+        paymentStatus: $("paymentStatus").value,
+        completedDate: $("completedDate").value,
+        paymentRequestedDate: $("paymentRequestedDate").value,
+        paidDate: $("paidDate").value,
+        paymentTerms: $("paymentTerms").value.trim(),
+        notes: $("notes").value.trim(),
+        updatedAt: new Date().toISOString(),
+        createdAt: tasks.find(t => t.id === $("taskId").value)?.createdAt || new Date().toISOString()
+      };
+    }
+
+    function setFormTask(t){
+      $("formTitle").textContent = "Edit task/job";
+      $("taskId").value = t.id || "";
+      $("jobTitle").value = t.jobTitle || "";
+      $("taskTitle").value = t.taskTitle || "";
+      $("clientName").value = t.clientName || "";
+      $("contactName").value = t.contactName || "";
+      $("clientEmail").value = t.clientEmail || "";
+      $("clientPhone").value = t.clientPhone || "";
+      $("location").value = t.location || "";
+      $("taskDate").value = t.taskDate || "";
+      $("startTime").value = t.startTime || "";
+      $("endTime").value = t.endTime || "";
+      $("feeAmount").value = t.feeAmount || "";
+      $("currency").value = t.currency || "GBP";
+      $("claimTravel").value = t.claimTravel || "no";
+      $("travelMiles").value = t.travelMiles || "";
+      $("travelRate").value = t.travelRate || settings.mileageRate || "0.45";
+      updateTravelPreview();
+      $("referenceNo").value = t.referenceNo || "";
+      $("taskStatus").value = t.taskStatus || "upcoming";
+      $("paymentStatus").value = t.paymentStatus || "not_requested";
+      $("completedDate").value = t.completedDate || "";
+      $("paymentRequestedDate").value = t.paymentRequestedDate || "";
+      $("paidDate").value = t.paidDate || "";
+      $("paymentTerms").value = t.paymentTerms || "";
+      $("notes").value = t.notes || "";
+    }
+
+    function resetForm(){
+      $("formTitle").textContent = "Add task/job";
+      $("taskForm").reset();
+      $("taskId").value = "";
+      $("currency").value = settings.defaultCurrency || "GBP";
+      $("claimTravel").value = "no";
+      $("travelMiles").value = "";
+      $("travelRate").value = settings.mileageRate || "0.45";
+      updateTravelPreview();
+      $("taskStatus").value = "upcoming";
+      $("paymentStatus").value = "not_requested";
+      $("taskDate").value = todayISO();
+      $("startTime").value = "09:00";
+      $("endTime").value = "17:00";
+    }
+
+    $("taskForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const t = getFormTask();
+      if(t.taskStatus === "completed" && !t.completedDate) t.completedDate = todayISO();
+      if(t.paymentStatus === "requested" && !t.paymentRequestedDate) t.paymentRequestedDate = todayISO();
+      if(t.paymentStatus === "paid" && !t.paidDate) t.paidDate = todayISO();
+      const index = tasks.findIndex(x => x.id === t.id);
+      if(index >= 0) tasks[index] = t; else tasks.push(t);
+      saveTasks();
+      showToast("Task saved");
+      switchTab("tasks");
+    });
+    $("resetFormBtn").addEventListener("click", resetForm);
+    ["claimTravel", "travelMiles", "travelRate", "currency", "feeAmount"].forEach(id => $(id).addEventListener("input", updateTravelPreview));
+    ["claimTravel", "currency"].forEach(id => $(id).addEventListener("change", updateTravelPreview));
+    function updateTravelPreview(){
+      const claim = $("claimTravel").value === "yes";
+      $("travelMiles").disabled = !claim;
+      $("travelRate").disabled = !claim;
+      const amount = claim ? Number($("travelMiles").value || 0) * Number($("travelRate").value || settings.mileageRate || 0) : 0;
+      $("travelAmountPreview").value = money(amount, $("currency").value || settings.defaultCurrency || "GBP");
+    }
+    $("calendarFromFormBtn").addEventListener("click", () => {
+      const t = getFormTask();
+      if(!t.jobTitle || !t.taskTitle || !t.taskDate || !t.startTime || !t.endTime){ showToast("Add job title, task title, date, start and end time first"); return; }
+      downloadIcs(t);
+    });
+
+    ["taskStatus", "paymentStatus"].forEach(id => {
+      $(id).addEventListener("change", () => {
+        if($("taskStatus").value === "completed" && !$("completedDate").value) $("completedDate").value = todayISO();
+        if($("paymentStatus").value === "requested" && !$("paymentRequestedDate").value) $("paymentRequestedDate").value = todayISO();
+        if($("paymentStatus").value === "paid" && !$("paidDate").value) $("paidDate").value = todayISO();
+      });
+    });
+
+    function statusBadge(t){
+      if(t.taskStatus === "cancelled") return `<span class="badge danger">Cancelled</span>`;
+      if(t.paymentStatus === "paid") return `<span class="badge success">Paid</span>`;
+      if(t.taskStatus === "completed" && t.paymentStatus === "requested") return `<span class="badge warning">Payment requested</span>`;
+      if(t.taskStatus === "completed") return `<span class="badge warning">Completed unpaid</span>`;
+      return `<span class="badge info">Upcoming</span>`;
+    }
+
+    function isUnpaid(t){ return t.taskStatus === "completed" && t.paymentStatus !== "paid"; }
+    function overdueDays(t){ return isUnpaid(t) ? daysBetween(t.paymentRequestedDate || t.completedDate || t.taskDate, todayISO()) : 0; }
+
+    function renderDashboard(){
+      const active = tasks.filter(t => t.taskStatus !== "cancelled");
+      const upcoming = active.filter(t => t.taskStatus === "upcoming" && t.taskDate >= todayISO()).sort((a,b) => (a.taskDate+a.startTime).localeCompare(b.taskDate+b.startTime));
+      const unpaid = active.filter(isUnpaid);
+      const overdue = unpaid.filter(t => overdueDays(t) >= 7);
+      const now = new Date();
+      const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+      const paidMonth = active.filter(t => t.paymentStatus === "paid" && (t.paidDate || "").startsWith(ym)).reduce((sum,t)=>sum+totalAmount(t),0);
+      const monthCurrency = active.find(t => t.paymentStatus === "paid" && (t.paidDate || "").startsWith(ym))?.currency || settings.defaultCurrency || "GBP";
+      $("statUpcoming").textContent = upcoming.length;
+      $("statUnpaid").textContent = unpaid.length;
+      $("statOverdue").textContent = overdue.length;
+      $("statPaidMonth").textContent = money(paidMonth, monthCurrency);
+
+      const attention = [...overdue, ...unpaid.filter(t => overdueDays(t) < 7)].sort((a,b) => overdueDays(b) - overdueDays(a));
+      $("attentionList").innerHTML = attention.length ? attention.slice(0,8).map(renderTaskCompact).join("") : `<div class="empty">No unpaid completed tasks at the moment.</div>`;
+      $("upcomingList").innerHTML = upcoming.length ? upcoming.slice(0,8).map(renderTaskCompact).join("") : `<div class="empty">No upcoming tasks yet.</div>`;
+    }
+
+    function renderTaskCompact(t){
+      const od = overdueDays(t);
+      const overdueLabel = isUnpaid(t) && od >= 7 ? `<span class="badge danger">${od} days unpaid</span>` : "";
+      return `<div class="task-item">
+        <div class="task-top">
+          <div>
+            <div class="task-title">${escapeHtml(t.taskTitle)}</div>
+            <div class="task-meta">${escapeHtml(t.jobTitle || "Role not set")} · ${escapeHtml(t.clientName)} · ${fmtDateTime(t.taskDate, t.startTime, t.endTime)} · ${money(totalAmount(t), t.currency)}</div>
+          </div>
+          <div class="btn-row">${statusBadge(t)}${overdueLabel}</div>
+        </div>
+        <div class="btn-row no-print">
+          <button class="secondary" onclick="editTask('${t.id}')">Edit</button>
+          <button class="secondary" onclick="downloadIcsById('${t.id}')">Calendar</button>
+          ${t.taskStatus === "completed" ? `<button class="gold" onclick="openPaymentFor('${t.id}')">Payment request</button>` : `<button class="success" onclick="markCompleted('${t.id}')">Mark completed</button>`}
+        </div>
+      </div>`;
+    }
+
+    function renderTasks(){
+      const search = $("searchTasks").value.trim().toLowerCase();
+      const fs = $("filterStatus").value;
+      const fp = $("filterPayment").value;
+      let filtered = [...tasks];
+      if(fs !== "all") filtered = filtered.filter(t => t.taskStatus === fs);
+      if(fp !== "all") filtered = filtered.filter(t => t.paymentStatus === fp);
+      if(search){
+        filtered = filtered.filter(t => [t.jobTitle, t.taskTitle, t.clientName, t.clientEmail, t.referenceNo, t.contactName, t.location].join(" ").toLowerCase().includes(search));
+      }
+      filtered.sort((a,b) => (b.taskDate+b.startTime).localeCompare(a.taskDate+a.startTime));
+      $("taskList").innerHTML = filtered.length ? filtered.map(renderTaskFull).join("") : `<div class="empty">No tasks match the selected filters.</div>`;
+    }
+
+    function renderTaskFull(t){
+      const od = overdueDays(t);
+      return `<div class="task-item">
+        <div class="task-top">
+          <div>
+            <div class="task-title">${escapeHtml(t.taskTitle)}</div>
+            <div class="task-meta">
+              <span>${escapeHtml(t.jobTitle || "Role not set")}</span>
+              <span>${escapeHtml(t.clientName)}</span>
+              <span>${fmtDateTime(t.taskDate, t.startTime, t.endTime)}</span>
+              <span>${money(totalAmount(t), t.currency)}</span>
+              ${t.referenceNo ? `<span>Ref: ${escapeHtml(t.referenceNo)}</span>` : ""}
+            </div>
+          </div>
+          <div class="btn-row">${statusBadge(t)}${isUnpaid(t) && od >= 7 ? `<span class="badge danger">${od} days unpaid</span>` : ""}</div>
+        </div>
+        <div class="small muted">
+          ${t.location ? `<div><strong>Location:</strong> ${escapeHtml(t.location)}</div>` : ""}
+          ${t.clientEmail ? `<div><strong>Email:</strong> ${escapeHtml(t.clientEmail)}</div>` : ""}
+          ${t.claimTravel === "yes" ? `<div><strong>Travel claim:</strong> ${escapeHtml(t.travelMiles || "0")} miles × ${money(t.travelRate || settings.mileageRate || 0, t.currency)} per mile = ${money(travelAmount(t), t.currency)}</div>` : ""}
+          ${t.notes ? `<div><strong>Notes:</strong> ${escapeHtml(t.notes)}</div>` : ""}
+          ${t.paymentRequestedDate ? `<div><strong>Payment requested:</strong> ${fmtDate(t.paymentRequestedDate)}</div>` : ""}
+          ${t.paidDate ? `<div><strong>Paid:</strong> ${fmtDate(t.paidDate)}</div>` : ""}
+        </div>
+        <div class="btn-row no-print">
+          <button class="secondary" onclick="editTask('${t.id}')">Edit</button>
+          <button class="secondary" onclick="downloadIcsById('${t.id}')">Calendar</button>
+          <button class="success" onclick="markCompleted('${t.id}')">Mark completed</button>
+          <button class="gold" onclick="openPaymentFor('${t.id}')">Payment request</button>
+          <button class="success" onclick="markPaid('${t.id}')">Mark paid</button>
+          <button class="danger" onclick="deleteTask('${t.id}')">Delete</button>
+        </div>
+      </div>`;
+    }
+
+    $("searchTasks").addEventListener("input", renderTasks);
+    $("filterStatus").addEventListener("change", renderTasks);
+    $("filterPayment").addEventListener("change", renderTasks);
+
+    window.editTask = function(id){
+      const t = tasks.find(x => x.id === id);
+      if(!t) return;
+      setFormTask(t);
+      switchTab("add");
+    };
+    window.deleteTask = function(id){
+      const t = tasks.find(x => x.id === id);
+      if(!t) return;
+      if(confirm(`Delete task "${t.taskTitle}"?`)){
+        tasks = tasks.filter(x => x.id !== id);
+        saveTasks();
+        showToast("Task deleted");
+      }
+    };
+    window.markCompleted = function(id){
+      const t = tasks.find(x => x.id === id);
+      if(!t) return;
+      t.taskStatus = "completed";
+      t.completedDate = t.completedDate || todayISO();
+      t.updatedAt = new Date().toISOString();
+      saveTasks();
+      showToast("Marked as completed");
+    };
+    window.markPaid = function(id){
+      const t = tasks.find(x => x.id === id);
+      if(!t) return;
+      t.paymentStatus = "paid";
+      t.paidDate = t.paidDate || todayISO();
+      t.updatedAt = new Date().toISOString();
+      saveTasks();
+      showToast("Marked as paid");
+    };
+    window.openPaymentFor = function(id){
+      selectedRequestTaskId = id;
+      renderRequestOptions();
+      switchTab("payment");
+    };
+
+    function downloadIcsById(id){ const t = tasks.find(x => x.id === id); if(t) downloadIcs(t); }
+    window.downloadIcsById = downloadIcsById;
+
+    function icsEscape(s){ return String(s || "").replace(/\\/g,"\\\\").replace(/,/g,"\\,").replace(/;/g,"\\;").replace(/\n/g,"\\n"); }
+    function icsDate(date, time){ return `${date.replaceAll("-","")}T${(time || "09:00").replace(":","")}00`; }
+    function downloadIcs(t){
+      const desc = [
+        `Job title / role: ${t.jobTitle || ""}`,
+        `Task title / event: ${t.taskTitle || ""}`,
+        `Client: ${t.clientName || ""}`,
+        `Contact: ${t.contactName || ""}`,
+        `Email: ${t.clientEmail || ""}`,
+        `Phone: ${t.clientPhone || ""}`,
+        `Payment: ${money(totalAmount(t), t.currency)}`,
+        t.claimTravel === "yes" ? `Travel: ${t.travelMiles || 0} miles at ${money(t.travelRate || settings.mileageRate || 0, t.currency)} per mile` : "Travel: Not claimed",
+        `Reference: ${t.referenceNo || ""}`,
+        "",
+        t.notes || ""
+      ].join("\n");
+      const ics = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Task Payment Tracker//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        `UID:${t.id || uid()}@task-payment-tracker.local`,
+        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g,"").split(".")[0]}Z`,
+        `DTSTART:${icsDate(t.taskDate, t.startTime)}`,
+        `DTEND:${icsDate(t.taskDate, t.endTime)}`,
+        `SUMMARY:${icsEscape([t.taskTitle, t.jobTitle].filter(Boolean).join(" - ") || "Task")}`,
+        `LOCATION:${icsEscape(t.location || "")}`,
+        `DESCRIPTION:${icsEscape(desc)}`,
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+      downloadBlob(`${slug(t.taskTitle || t.jobTitle)}-${t.taskDate || todayISO()}.ics`, ics, "text/calendar;charset=utf-8");
+      showToast("Calendar file downloaded");
+    }
+
+    function renderRequestOptions(){
+      const select = $("requestTaskSelect");
+      const completed = tasks.filter(t => t.taskStatus === "completed" || t.paymentStatus !== "not_requested").sort((a,b) => (b.completedDate || b.taskDate).localeCompare(a.completedDate || a.taskDate));
+      select.innerHTML = completed.length ? completed.map(t => `<option value="${t.id}">${escapeHtml(t.taskTitle)} · ${escapeHtml(t.jobTitle || "Role not set")} · ${escapeHtml(t.clientName)} · ${fmtDate(t.completedDate || t.taskDate)}</option>`).join("") : `<option value="">No completed task available</option>`;
+      if(selectedRequestTaskId && completed.some(t => t.id === selectedRequestTaskId)) select.value = selectedRequestTaskId;
+      else if(completed[0]) selectedRequestTaskId = completed[0].id;
+      fillPaymentSettings();
+      renderRequestPreview();
+    }
+
+    function fillPaymentSettings(){
+      $("requestFromName").value = profileFullName() || settings.fromName || $("requestFromName").value || "";
+      $("requestFromEmail").value = settings.fromEmail || $("requestFromEmail").value || "";
+      $("requestBankInfo").value = bankDetailsText() || settings.paymentDetails || $("requestBankInfo").value || "";
+      $("requestDueDays").value = settings.dueDays || $("requestDueDays").value || 14;
+    }
+
+    function capturePaymentSettings(){
+      settings.fromName = $("requestFromName").value.trim();
+      settings.fromEmail = $("requestFromEmail").value.trim();
+      settings.paymentDetails = $("requestBankInfo").value.trim();
+      settings.dueDays = $("requestDueDays").value;
+      saveSettings();
+    }
+
+    $("requestTaskSelect").addEventListener("change", () => { selectedRequestTaskId = $("requestTaskSelect").value; renderRequestPreview(); });
+    $("requestTemplateType").addEventListener("change", renderRequestPreview);
+    ["requestFromName", "requestFromEmail", "requestBankInfo", "requestDueDays", "requestMessage"].forEach(id => $(id).addEventListener("input", () => { capturePaymentSettings(); renderRequestPreview(); }));
+    $("refreshRequestBtn").addEventListener("click", renderRequestPreview);
+    $("printRequestBtn").addEventListener("click", () => { renderRequestPreview(); window.print(); });
+    $("downloadRequestBtn").addEventListener("click", downloadRequestHtml);
+    $("shareRequestBtn").addEventListener("click", shareRequest);
+    $("emailRequestBtn").addEventListener("click", openEmailDraft);
+    $("markRequestedBtn").addEventListener("click", markSelectedRequested);
+
+    function selectedRequestTask(){ return tasks.find(t => t.id === $("requestTaskSelect").value) || tasks.find(t => t.id === selectedRequestTaskId); }
+    function dueDateFrom(task){
+      const days = Number($("requestDueDays").value || 0);
+      const base = new Date((task.completedDate || task.taskDate || todayISO()) + "T00:00:00");
+      base.setDate(base.getDate() + days);
+      return base.toISOString().slice(0,10);
+    }
+    function requestNumber(task){ return task.referenceNo || `REQ-${(task.completedDate || task.taskDate || todayISO()).replaceAll("-","")}-${task.id.slice(-4).toUpperCase()}`; }
+    function requestHtml(task){
+      if(!task) return `<div class="empty">Mark a task as completed first, then generate a payment request here.</div>`;
+      const template = $("requestTemplateType")?.value || "general";
+      if(template === "club_academy_scotland_2024") return clubAcademyRequestHtml(task);
+      return generalRequestHtml(task);
+    }
+    function generalRequestHtml(task){
+      const fromName = $("requestFromName").value.trim() || profileFullName() || "Your name/business";
+      const fromEmail = $("requestFromEmail").value.trim();
+      const fromAddress = profileAddressText();
+      const bank = $("requestBankInfo").value.trim() || bankDetailsText() || "Payment details to be confirmed";
+      const travel = travelAmount(task);
+      const total = totalAmount(task);
+      const rate = task.travelRate || settings.mileageRate || 0;
+      return `
+        <div style="font-family:Arial, sans-serif;color:#111;line-height:1.45;max-width:820px;margin:0 auto">
+          <div style="border-bottom:4px solid #4B0082;padding-bottom:12px;margin-bottom:18px">
+            <h2 style="margin:0 0 4px;font-size:26px">Payment Request</h2>
+            <div style="color:#555">Request no: ${escapeHtml(requestNumber(task))}</div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+            <tr><th style="width:34%;text-align:left;padding:9px;border:1px solid #ddd;background:#f5f5f5">From</th><td style="padding:9px;border:1px solid #ddd">${escapeHtml(fromName)}${fromEmail ? `<br>${escapeHtml(fromEmail)}` : ""}${fromAddress ? `<br>${escapeHtml(fromAddress).replace(/\n/g,"<br>")}` : ""}</td></tr>
+            <tr><th style="text-align:left;padding:9px;border:1px solid #ddd;background:#f5f5f5">To</th><td style="padding:9px;border:1px solid #ddd">${escapeHtml(task.clientName)}${task.contactName ? `<br>${escapeHtml(task.contactName)}` : ""}${task.clientEmail ? `<br>${escapeHtml(task.clientEmail)}` : ""}</td></tr>
+            <tr><th style="text-align:left;padding:9px;border:1px solid #ddd;background:#f5f5f5">Job title / role</th><td style="padding:9px;border:1px solid #ddd">${escapeHtml(task.jobTitle || "N/A")}</td></tr>
+            <tr><th style="text-align:left;padding:9px;border:1px solid #ddd;background:#f5f5f5">Task / event</th><td style="padding:9px;border:1px solid #ddd">${escapeHtml(task.taskTitle)}</td></tr>
+            <tr><th style="text-align:left;padding:9px;border:1px solid #ddd;background:#f5f5f5">Date</th><td style="padding:9px;border:1px solid #ddd">${fmtDate(task.completedDate || task.taskDate)}</td></tr>
+            <tr><th style="text-align:left;padding:9px;border:1px solid #ddd;background:#f5f5f5">Location</th><td style="padding:9px;border:1px solid #ddd">${escapeHtml(task.location || "N/A")}</td></tr>
+          </table>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+            <tr><th style="text-align:left;padding:9px;border:1px solid #ddd;background:#f5f5f5">Item</th><th style="text-align:right;padding:9px;border:1px solid #ddd;background:#f5f5f5">Amount</th></tr>
+            <tr><td style="padding:9px;border:1px solid #ddd">Agreed task payment</td><td style="padding:9px;border:1px solid #ddd;text-align:right">${money(task.feeAmount, task.currency)}</td></tr>
+            ${task.claimTravel === "yes" ? `<tr><td style="padding:9px;border:1px solid #ddd">Travel claim: ${escapeHtml(task.travelMiles || "0")} miles x ${money(rate, task.currency)} per mile</td><td style="padding:9px;border:1px solid #ddd;text-align:right">${money(travel, task.currency)}</td></tr>` : ""}
+            <tr><td style="padding:9px;border:1px solid #ddd"><strong>Total amount requested</strong></td><td style="padding:9px;border:1px solid #ddd;text-align:right"><strong>${money(total, task.currency)}</strong></td></tr>
+            <tr><td style="padding:9px;border:1px solid #ddd">Due date</td><td style="padding:9px;border:1px solid #ddd;text-align:right">${fmtDate(dueDateFrom(task))}</td></tr>
+          </table>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+            <tr><th style="text-align:left;padding:9px;border:1px solid #ddd;background:#f5f5f5">Payment details</th></tr>
+            <tr><td style="padding:9px;border:1px solid #ddd">${escapeHtml(bank).replace(/\n/g,"<br>")}</td></tr>
+          </table>
+          ${task.notes ? `<p><strong>Notes:</strong><br>${escapeHtml(task.notes).replace(/\n/g,"<br>")}</p>` : ""}
+          <p>Thank you.</p>
+        </div>`;
+    }
+    function mileageRateLabel(rate, currency){
+      const n = Number(rate || 0);
+      if(currency === "GBP" && n > 0 && n < 1) return `${Math.round(n * 100)}p`;
+      return money(n, currency);
+    }
+    function clubAcademyRequestHtml(task){
+      const a = getAddressParts();
+      const fullName = profileFullName() || $("requestFromName").value.trim() || "";
+      const accountName = settings.accountName || fullName;
+      const rate = Number(task.travelRate || settings.mileageRate || 0);
+      const miles = Number(task.travelMiles || 0);
+      const travel = task.claimTravel === "yes" ? travelAmount(task) : 0;
+      const fee = Number(task.feeAmount || 0);
+      const total = fee + travel;
+      const rateLabel = mileageRateLabel(rate, task.currency);
+      const travelDescription = task.claimTravel === "yes" ? `${escapeHtml(a.postCode || "Home post code")} to ${escapeHtml(task.location || "Location")}` : "No travel claimed";
+      const travelDetails = task.claimTravel === "yes" ? `${escapeHtml(miles.toString())} miles` : "";
+      const travelCalc = task.claimTravel === "yes" ? `${escapeHtml(miles.toString())} x ${escapeHtml(rateLabel)} = ${money(travel, task.currency)}` : money(0, task.currency);
+      return `
+        <div style="font-family:Arial, sans-serif;color:#111;line-height:1.35;max-width:820px;margin:0 auto">
+          <h2 style="text-align:center;margin:0 0 18px;font-size:22px">Referee Claim Form: Club Academy Scotland 2024</h2>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:18px">
+            <tr><th style="text-align:left;width:34%;padding:8px;border:1px solid #444;background:#f2f2f2">Name</th><td style="padding:8px;border:1px solid #444">${escapeHtml(fullName)}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Address Line 1</th><td style="padding:8px;border:1px solid #444">${escapeHtml(a.line1)}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Address Line 2</th><td style="padding:8px;border:1px solid #444">${escapeHtml(a.line2)}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Address Line 3</th><td style="padding:8px;border:1px solid #444">${escapeHtml(a.line3)}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Town</th><td style="padding:8px;border:1px solid #444">${escapeHtml(a.town)}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Post Code</th><td style="padding:8px;border:1px solid #444">${escapeHtml(a.postCode)}</td></tr>
+          </table>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:14px">
+            <tr><th style="text-align:left;width:34%;padding:8px;border:1px solid #444;background:#f2f2f2">Match</th><td style="padding:8px;border:1px solid #444">${escapeHtml(task.taskTitle)}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Date</th><td style="padding:8px;border:1px solid #444">${fmtDate(task.completedDate || task.taskDate)}</td></tr>
+          </table>
+          <h3 style="margin:18px 0 8px">Match Fee</h3>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Type of Official</th><th style="text-align:right;padding:8px;border:1px solid #444;background:#f2f2f2">Match Fee</th></tr>
+            <tr><td style="padding:8px;border:1px solid #444">${escapeHtml(task.jobTitle || "")}</td><td style="padding:8px;border:1px solid #444;text-align:right">${money(fee, task.currency)}</td></tr>
+          </table>
+          <p style="margin:0 0 6px"><strong>My bank details are:</strong></p>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+            <tr><th style="text-align:left;width:34%;padding:8px;border:1px solid #444;background:#f2f2f2">Name</th><td style="padding:8px;border:1px solid #444">${escapeHtml(accountName)}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Account Number</th><td style="padding:8px;border:1px solid #444">${escapeHtml(settings.accountNumber || "")}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Sort Code</th><td style="padding:8px;border:1px solid #444">${escapeHtml(settings.sortCode || "")}</td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Bank Name</th><td style="padding:8px;border:1px solid #444">${escapeHtml(settings.bankName || "")}</td></tr>
+          </table>
+          <h3 style="margin:18px 0 8px">Travel Expenses - ${escapeHtml(rateLabel)} per mile</h3>
+          <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Description</th><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Details</th><th style="text-align:right;padding:8px;border:1px solid #444;background:#f2f2f2">Amount (${escapeHtml(currencySymbol(task.currency))})</th></tr>
+            <tr><td style="padding:8px;border:1px solid #444">${travelDescription}</td><td style="padding:8px;border:1px solid #444">${travelDetails}</td><td style="padding:8px;border:1px solid #444;text-align:right">${travelCalc}</td></tr>
+          </table>
+          <table style="width:100%;border-collapse:collapse;margin-top:8px">
+            <tr><th style="text-align:left;width:34%;padding:8px;border:1px solid #444;background:#f2f2f2">Total Payable</th><td style="padding:8px;border:1px solid #444;text-align:right"><strong>${money(total, task.currency)}</strong></td></tr>
+            <tr><th style="text-align:left;padding:8px;border:1px solid #444;background:#f2f2f2">Date</th><td style="padding:8px;border:1px solid #444">${fmtDate(todayISO())}</td></tr>
+          </table>
+        </div>`;
+    }
+    function renderRequestPreview(){
+      capturePaymentSettings();
+      const task = selectedRequestTask();
+      $("requestPreview").innerHTML = requestHtml(task);
+    }
+    function requestDocumentBlob(){
+      const task = selectedRequestTask();
+      if(!task) return null;
+      const full = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Payment Request</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}@media print{body{padding:0}}</style></head><body>${requestHtml(task)}</body></html>`;
+      return new Blob([full], {type:"text/html;charset=utf-8"});
+    }
+    function downloadRequestHtml(){
+      const task = selectedRequestTask();
+      const blob = requestDocumentBlob();
+      if(!task || !blob){ showToast("Choose a completed task first"); return; }
+      downloadBlob(`${$("requestTemplateType").value === "club_academy_scotland_2024" ? "club-academy-claim" : "payment-request"}-${slug(task.clientName)}-${task.taskDate}.html`, blob, "text/html;charset=utf-8");
+      showToast("Payment request downloaded");
+    }
+    async function shareRequest(){
+      const task = selectedRequestTask();
+      const blob = requestDocumentBlob();
+      if(!task || !blob){ showToast("Choose a completed task first"); return; }
+      const file = new File([blob], `${$("requestTemplateType").value === "club_academy_scotland_2024" ? "club-academy-claim" : "payment-request"}-${slug(task.clientName)}-${task.taskDate}.html`, {type:"text/html"});
+      const subject = `${$("requestTemplateType").value === "club_academy_scotland_2024" ? "Claim form" : "Payment request"}: ${task.taskTitle}`;
+      const text = buildEmailBody(task);
+      try{
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:subject, text});
+          showToast("Share sheet opened");
+        } else if(navigator.share){
+          await navigator.share({title:subject, text});
+          showToast("Share sheet opened");
+        } else {
+          showToast("Share is not supported in this browser. Use Download or Email Draft.");
+        }
+      } catch(e){
+        showToast("Share cancelled or unavailable");
+      }
+    }
+    function replaceTokens(template, task){
+      const contact = task.contactName || task.clientName || "there";
+      return template
+        .replaceAll("{contact}", contact)
+        .replaceAll("{taskTitle}", task.taskTitle || "the completed task")
+        .replaceAll("{jobTitle}", task.jobTitle || "")
+        .replaceAll("{clientName}", task.clientName || "")
+        .replaceAll("{amount}", money(totalAmount(task), task.currency))
+        .replaceAll("{fromName}", $("requestFromName").value.trim() || "");
+    }
+    function buildEmailBody(task){
+      return replaceTokens($("requestMessage").value, task) + `\n\nJob title / role: ${task.jobTitle || ""}\nTask / event: ${task.taskTitle || ""}\nAmount requested: ${money(totalAmount(task), task.currency)}\nCompleted date: ${fmtDate(task.completedDate || task.taskDate)}\nRequest number: ${requestNumber(task)}`;
+    }
+    function openEmailDraft(){
+      const task = selectedRequestTask();
+      if(!task){ showToast("Choose a completed task first"); return; }
+      const to = encodeURIComponent(task.clientEmail || "");
+      const subject = encodeURIComponent(`${$("requestTemplateType").value === "club_academy_scotland_2024" ? "Claim form" : "Payment request"}: ${task.taskTitle}`);
+      const body = encodeURIComponent(buildEmailBody(task) + "\n\nPlease attach the generated payment request if it is not automatically attached by your device.");
+      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+      showToast("Email draft opened");
+    }
+    function markSelectedRequested(){
+      const task = selectedRequestTask();
+      if(!task){ showToast("Choose a completed task first"); return; }
+      task.paymentStatus = "requested";
+      task.paymentRequestedDate = task.paymentRequestedDate || todayISO();
+      task.updatedAt = new Date().toISOString();
+      saveTasks();
+      showToast("Marked as payment requested");
+    }
+
+    function currentExportTasks(){
+      const preset = $("exportPreset").value;
+      const basis = $("exportBasis").value;
+      let start = $("exportStart").value;
+      let end = $("exportEnd").value;
+      const now = new Date();
+      if(preset === "this_month"){
+        start = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-01`;
+        end = new Date(now.getFullYear(), now.getMonth()+1, 0).toISOString().slice(0,10);
+      } else if(preset === "last_month"){
+        const d = new Date(now.getFullYear(), now.getMonth()-1, 1);
+        start = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`;
+        end = new Date(d.getFullYear(), d.getMonth()+1, 0).toISOString().slice(0,10);
+      } else if(preset === "this_year"){
+        start = `${now.getFullYear()}-01-01`;
+        end = `${now.getFullYear()}-12-31`;
+      } else if(preset === "all"){
+        start = ""; end = "";
+      }
+      if(preset !== "custom"){
+        $("exportStart").value = start;
+        $("exportEnd").value = end;
+      }
+      return tasks.filter(t => {
+        const d = t[basis];
+        if(!d && preset !== "all") return false;
+        if(start && d < start) return false;
+        if(end && d > end) return false;
+        return true;
+      }).sort((a,b) => ((a[basis] || a.taskDate) || "").localeCompare((b[basis] || b.taskDate) || ""));
+    }
+    function renderExportPreview(){
+      const list = currentExportTasks();
+      const total = list.reduce((s,t) => s + totalAmount(t), 0);
+      const cur = list[0]?.currency || settings.defaultCurrency || "GBP";
+      $("exportPreview").innerHTML = list.length ? `
+        <p class="muted">${list.length} task(s), total ${money(total, cur)}. Mixed currencies are not converted.</p>
+        <table>
+          <thead><tr><th>Date</th><th>Job title</th><th>Task</th><th>Client</th><th>Status</th><th>Payment</th><th>Total amount</th></tr></thead>
+          <tbody>${list.slice(0,80).map(t => `<tr><td>${fmtDate(t.taskDate)}</td><td>${escapeHtml(t.jobTitle || "")}</td><td>${escapeHtml(t.taskTitle)}</td><td>${escapeHtml(t.clientName)}</td><td>${escapeHtml(t.taskStatus)}</td><td>${escapeHtml(t.paymentStatus)}</td><td>${money(totalAmount(t),t.currency)}</td></tr>`).join("")}</tbody>
+        </table>` : `<div class="empty">No tasks in this export range.</div>`;
+    }
+    ["exportPreset", "exportBasis", "exportStart", "exportEnd"].forEach(id => $(id).addEventListener("change", renderExportPreview));
+    function csvEscape(v){
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? `"${s.replaceAll('"','""')}"` : s;
+    }
+    function downloadCsv(){
+      const list = currentExportTasks();
+      const headers = ["Task date","Start","End","Job title","Task title","Client","Contact","Email","Phone","Location","Agreed fee","Currency","Claim travel","Travel miles","Mileage rate","Travel amount","Total amount","Reference","Task status","Payment status","Completed date","Payment requested date","Paid date","Payment terms","Notes"];
+      const rows = list.map(t => [t.taskDate,t.startTime,t.endTime,t.jobTitle || "",t.taskTitle,t.clientName,t.contactName,t.clientEmail,t.clientPhone,t.location,t.feeAmount,t.currency,t.claimTravel || "no",t.travelMiles || "",t.travelRate || "",travelAmount(t).toFixed(2),totalAmount(t).toFixed(2),t.referenceNo,t.taskStatus,t.paymentStatus,t.completedDate,t.paymentRequestedDate,t.paidDate,t.paymentTerms,t.notes]);
+      const csv = [headers, ...rows].map(r => r.map(csvEscape).join(",")).join("\n");
+      downloadBlob(`task-export-${todayISO()}.csv`, csv, "text/csv;charset=utf-8");
+      showToast("CSV exported");
+    }
+    function normaliseTaskForSync(task){
+      const now = new Date().toISOString();
+      return {
+        ...task,
+        id: task.id || uid(),
+        jobTitle: task.jobTitle || "",
+        createdAt: task.createdAt || task.updatedAt || now,
+        updatedAt: task.updatedAt || task.createdAt || now
+      };
+    }
+    function syncPayload(){
+      return {
+        app:"Task Payment Tracker",
+        version:"1.3",
+        syncFormat:"complete-device-sync-json",
+        exportedAt:new Date().toISOString(),
+        tasks: tasks.map(normaliseTaskForSync),
+        settings
+      };
+    }
+    function syncFileName(){
+      return `task-payment-sync-${todayISO()}.json`;
+    }
+    function syncJsonText(){
+      return JSON.stringify(syncPayload(), null, 2);
+    }
+    function downloadJsonBackup(){
+      downloadBlob(syncFileName(), syncJsonText(), "application/json;charset=utf-8");
+      showToast("Full sync JSON downloaded");
+    }
+    async function shareJsonBackup(){
+      const file = new File([syncJsonText()], syncFileName(), {type:"application/json"});
+      try{
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:"Task Payment Tracker sync JSON", text:"Full sync backup for Task Payment Tracker"});
+          showToast("Share sheet opened");
+        } else if(navigator.share){
+          await navigator.share({title:"Task Payment Tracker sync JSON", text:"Download the JSON from the app if file sharing is not supported on this browser."});
+          showToast("Share sheet opened");
+        } else {
+          downloadJsonBackup();
+        }
+      } catch(e){ showToast("Share cancelled or unavailable"); }
+    }
+    function taskTimeValue(task){
+      const time = Date.parse(task.updatedAt || task.createdAt || "");
+      return Number.isFinite(time) ? time : 0;
+    }
+    function mergeImportedTasks(importedTasks){
+      const currentById = new Map(tasks.map(t => [t.id, normaliseTaskForSync(t)]));
+      let added = 0, updated = 0, kept = 0;
+      importedTasks.map(normaliseTaskForSync).forEach(incoming => {
+        const existing = currentById.get(incoming.id);
+        if(!existing){
+          currentById.set(incoming.id, incoming);
+          added++;
+        } else if(taskTimeValue(incoming) > taskTimeValue(existing)){
+          currentById.set(incoming.id, incoming);
+          updated++;
+        } else {
+          kept++;
+        }
+      });
+      tasks = Array.from(currentById.values()).sort((a,b) => (b.taskDate || "").localeCompare(a.taskDate || "") || (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+      return {added, updated, kept};
+    }
+    function printSummary(){
+      const html = $("exportPreview").innerHTML;
+      const w = window.open("", "_blank");
+      w.document.write(`<!doctype html><html><head><title>Task summary</title><style>body{font-family:Arial,sans-serif;padding:24px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f5f5f5}</style></head><body><h1>Task summary</h1>${html}</body></html>`);
+      w.document.close();
+      w.print();
+    }
+    $("downloadCsvBtn").addEventListener("click", downloadCsv);
+    $("downloadJsonBtn").addEventListener("click", downloadJsonBackup);
+    $("shareJsonBtn").addEventListener("click", shareJsonBackup);
+    $("printSummaryBtn").addEventListener("click", printSummary);
+    $("importJsonBtn").addEventListener("click", async () => {
+      const file = $("importFile").files[0];
+      if(!file){ showToast("Choose a JSON sync file first"); return; }
+      try{
+        const text = await file.text();
+        const data = JSON.parse(text);
+        const importedTasks = Array.isArray(data) ? data : data.tasks;
+        if(!Array.isArray(importedTasks)) throw new Error("Invalid sync file");
+        const mode = $("importMode").value;
+        const settingsMode = $("importSettingsMode").value;
+        const warning = mode === "replace"
+          ? "This will replace all tasks currently stored in this browser with the JSON file. Continue?"
+          : "This will merge the JSON file with tasks currently stored in this browser. Continue?";
+        if(!confirm(warning)) return;
+        let result = {added:0, updated:0, kept:0};
+        if(mode === "replace"){
+          tasks = importedTasks.map(normaliseTaskForSync);
+          result.added = tasks.length;
+        } else {
+          result = mergeImportedTasks(importedTasks);
+        }
+        if(settingsMode === "import" && data.settings){
+          settings = {...{defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14"}, ...data.settings};
+          saveSettings();
+        }
+        saveTasks();
+        showToast(mode === "replace" ? `Imported ${tasks.length} task(s)` : `Merged: ${result.added} added, ${result.updated} updated`);
+      }catch(e){ showToast("Could not import this JSON sync file"); }
+    });
+
+    function uniqueSuggestions(values){
+      return [...new Set(values.map(v => String(v || "").trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b)).slice(0,80);
+    }
+    function setDatalist(id, values){
+      const el = $(id);
+      if(!el) return;
+      el.innerHTML = uniqueSuggestions(values).map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
+    }
+    function renderSuggestions(){
+      setDatalist("jobTitleSuggestions", tasks.map(t => t.jobTitle));
+      setDatalist("taskTitleSuggestions", tasks.map(t => t.taskTitle));
+      setDatalist("clientNameSuggestions", tasks.map(t => t.clientName));
+      setDatalist("contactNameSuggestions", tasks.map(t => t.contactName));
+      setDatalist("clientEmailSuggestions", tasks.map(t => t.clientEmail));
+      setDatalist("clientPhoneSuggestions", tasks.map(t => t.clientPhone));
+      setDatalist("locationSuggestions", tasks.map(t => t.location));
+      setDatalist("paymentTermsSuggestions", tasks.map(t => t.paymentTerms));
+      setDatalist("referenceNoSuggestions", tasks.map(t => t.referenceNo));
+    }
+    function renderAll(){
+      renderSuggestions();
+      renderDashboard();
+      renderTasks();
+      renderRequestOptions();
+      renderExportPreview();
+    }
+
+    resetForm();
+    updateTravelPreview();
+    renderAll();
+  </script>
+</body>
+</html>
