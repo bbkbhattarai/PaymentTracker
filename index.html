@@ -273,6 +273,25 @@
     }
     .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
 
+
+    .template-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin:10px 0}
+    .template-toolbar > div{min-width:170px;flex:1}
+    .template-mode-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;background:#fff;font-size:.78rem;color:var(--muted);margin:3px 4px 3px 0}
+    .library-note{background:#eef4ff;border:1px solid #cddfff;color:#163e76;border-radius:14px;padding:10px;font-size:.86rem;margin-top:10px}
+    .pdf-builder{border:1px solid var(--line);border-radius:16px;background:#fbfaff;padding:12px;margin-top:12px}
+    .pdf-stage-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#e9e5f2;padding:10px;max-height:620px}
+    .pdf-stage{position:relative;margin:auto;display:inline-block;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+    #pdfTemplateCanvas{display:block;max-width:100%;height:auto}
+    .pdf-field-box{position:absolute;border:2px solid #4B0082;background:rgba(255,215,0,.25);border-radius:4px;min-width:48px;min-height:18px;cursor:pointer;padding:2px 4px;font-size:10px;overflow:hidden;white-space:nowrap}
+    .pdf-field-box.selected{outline:3px solid rgba(75,0,130,.25);background:rgba(255,215,0,.42)}
+    .field-list{display:grid;gap:8px;margin-top:10px}
+    .field-editor-row{display:grid;grid-template-columns:1fr 1fr 78px 72px auto;gap:8px;align-items:end;border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px}
+    .field-editor-row input,.field-editor-row select{min-width:0}
+    .editable-template-preview{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px;min-height:90px;max-height:260px;overflow:auto}
+    .pdf-preview-card{border:1px solid var(--line);border-radius:15px;padding:14px;background:#fff}
+    .pdf-preview-fields{display:grid;gap:6px;margin-top:10px}
+    @media (max-width:760px){.field-editor-row{grid-template-columns:1fr}.pdf-stage-wrap{max-height:520px}.template-toolbar>div{min-width:100%}}
+
     .request-preview{
       background:#fff;
       border:1px solid var(--line);
@@ -475,6 +494,25 @@
     .alert-row.info .count{background:var(--info-bg);color:var(--info)}
     .alert-items{display:grid;gap:7px;margin-top:8px;color:var(--muted);font-size:.88rem}
     .alert-items div{border-top:1px dashed var(--line);padding-top:7px}
+    .alert-task-button{
+      width:100%;
+      border:0;
+      border-top:1px dashed var(--line);
+      border-radius:0;
+      background:transparent;
+      color:var(--text);
+      text-align:left;
+      padding:8px 0 0;
+      box-shadow:none;
+      display:block;
+      font-weight:700;
+    }
+    .alert-task-button:hover{filter:none;color:var(--brand);background:transparent}
+    .alert-task-button .small{display:block;font-weight:500;color:var(--muted);margin-top:2px}
+    .task-item.focus-flash{
+      outline:3px solid rgba(75,0,130,.28);
+      box-shadow:0 0 0 6px rgba(75,0,130,.08), var(--shadow);
+    }
 
     .settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
     .modal-backdrop{
@@ -546,6 +584,11 @@
       .print-only{display:block !important}
     }
   </style>
+
+  <!-- Optional browser-only template import/fill libraries. Used for DOCX conversion and PDF overlay fill. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 </head>
 <body>
   <div class="app-shell">
@@ -838,9 +881,12 @@ Kind regards,
       <section id="templates" class="tab-panel hidden">
         <div class="grid two">
           <div class="card">
-            <h2>Template Manager</h2>
+            <h2>Template Builder</h2>
             <div class="notice">
-              v11 supports placeholder-based templates. Upload or paste an HTML/text template containing placeholders such as <span class="mono">{{full_name}}</span>, <span class="mono">{Task Title}</span> or <span class="mono">{{total_payable}}</span>. The app detects the placeholders, asks you to map them to app fields, then saves the reusable template locally.
+              v14 adds a guided Template Builder. HTML/text templates remain the most reliable. DOCX import is supported when the Word converter loads in the browser, and PDF templates use an overlay method: the original PDF is kept, and you place fill boxes over the spaces that need completing.
+            </div>
+            <div class="library-note">
+              First use needs internet access for the free browser libraries used for DOCX/PDF processing. Once the app has loaded, saved templates stay in your app data and can be backed up or synced by JSON.
             </div>
             <div class="form-grid" style="margin-top:12px">
               <div>
@@ -849,22 +895,52 @@ Kind regards,
               </div>
               <div>
                 <label for="templateFile">Upload template</label>
-                <input id="templateFile" type="file" accept=".html,.htm,.txt,text/html,text/plain" />
-                <div class="field-note">For Word forms, save/export the form as HTML or paste the form text with placeholders into the box below.</div>
+                <input id="templateFile" type="file" accept=".html,.htm,.txt,.docx,.pdf,text/html,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf" />
+                <div class="field-note">Supported: HTML/TXT, DOCX, and PDF overlay. Old .doc files should be opened in Word and saved as .docx first.</div>
+              </div>
+              <div>
+                <label for="templateKind">Template route</label>
+                <select id="templateKind">
+                  <option value="htmlTemplate">HTML/Text/Word editable template</option>
+                  <option value="pdfOverlay">PDF overlay template</option>
+                </select>
+              </div>
+              <div>
+                <label for="insertPlaceholderField">Insert placeholder</label>
+                <select id="insertPlaceholderField"></select>
               </div>
               <div class="span-2">
-                <label for="templateSource">Template HTML/text</label>
-                <textarea id="templateSource" placeholder="Paste template here. Example: Payment request for {{task_title}} on {{task_date}}. Total: {{total_payable}}"></textarea>
+                <label for="templateSource">Editable template HTML/text</label>
+                <textarea id="templateSource" placeholder="Paste template here, or upload DOCX/HTML/TXT. Example: Payment request for {{task_title}} on {{task_date}}. Total: {{total_payable}}"></textarea>
               </div>
             </div>
             <div class="btn-row" style="margin-top:12px">
+              <button id="insertPlaceholderBtn" class="secondary">Insert placeholder</button>
               <button id="analyseTemplateBtn">Analyse placeholders</button>
               <button class="success" id="saveTemplateBtn">Save template</button>
               <button class="secondary" id="clearTemplateBtn">Clear</button>
             </div>
             <h3 style="margin-top:18px">Placeholder mapping</h3>
             <div id="placeholderMapping" class="placeholder-grid">
-              <div class="empty">Upload or paste a template, then analyse placeholders.</div>
+              <div class="empty">Upload, paste, or insert placeholders, then analyse the template.</div>
+            </div>
+
+            <div id="pdfBuilder" class="pdf-builder hidden">
+              <h3>PDF overlay fields</h3>
+              <p class="muted small">Click/tap on the PDF preview to add a fill box. Then map each box to an app field, fixed text, or an editable value. Use this for PDFs that need the original layout preserved.</p>
+              <div class="btn-row" style="margin-bottom:10px">
+                <button id="pdfPrevPageBtn" class="secondary">Previous page</button>
+                <button id="pdfNextPageBtn" class="secondary">Next page</button>
+                <button id="pdfAddFieldBtn">Add field to page</button>
+                <button id="pdfRemoveFieldBtn" class="danger">Remove selected</button>
+              </div>
+              <div id="pdfPageLabel" class="small muted" style="margin-bottom:8px">No PDF loaded.</div>
+              <div class="pdf-stage-wrap">
+                <div id="pdfStage" class="pdf-stage">
+                  <canvas id="pdfTemplateCanvas"></canvas>
+                </div>
+              </div>
+              <div id="pdfFieldList" class="field-list"></div>
             </div>
           </div>
           <div class="card">
@@ -1112,6 +1188,8 @@ Kind regards,
     let templates = loadTemplates();
     let editingTemplateId = null;
     let currentTemplatePlaceholders = [];
+    let currentTemplateKind = "htmlTemplate";
+    let pdfTemplateState = { fileName:"", base64:"", bytes:null, doc:null, pageCount:0, page:1, fields:[], selected:null, canvasWidth:0, canvasHeight:0 };
     let selectedRequestTaskId = null;
     let suggestionData = {};
     let activeSuggestInput = null;
@@ -1585,7 +1663,7 @@ Kind regards,
     function renderTaskFull(t){
       const wf = workflowState(t);
       const od = overdueDays(t);
-      return `<div class="task-item ${wf.cardClass}">
+      return `<div class="task-item ${wf.cardClass}" id="task-card-${t.id}">
         <div class="task-top">
           <div>
             <div class="task-title">${escapeHtml(t.taskTitle)}</div>
@@ -1736,7 +1814,7 @@ Kind regards,
         `<option value="general">General professional payment request</option>`,
         `<option value="club_academy_scotland_2024">Referee Claim Form: Club Academy Scotland 2024</option>`
       ];
-      const custom = templates.map(t => `<option value="custom:${escapeHtml(t.id)}">Custom: ${escapeHtml(t.name || "Untitled template")}</option>`);
+      const custom = templates.map(t => `<option value="custom:${escapeHtml(t.id)}">Custom ${t.kind === "pdfOverlay" ? "PDF" : "template"}: ${escapeHtml(t.name || "Untitled template")}</option>`);
       select.innerHTML = base.concat(custom).join("");
       if([...select.options].some(o => o.value === current)) select.value = current;
     }
@@ -1771,7 +1849,7 @@ Kind regards,
     $("requestTemplateType").addEventListener("change", renderRequestPreview);
     ["requestFromName", "requestFromEmail", "requestBankInfo", "requestDueDays", "requestMessage"].forEach(id => $(id).addEventListener("input", () => { capturePaymentSettings(); renderRequestPreview(); }));
     $("refreshRequestBtn").addEventListener("click", renderRequestPreview);
-    $("printRequestBtn").addEventListener("click", () => { renderRequestPreview(); window.print(); });
+    $("printRequestBtn").addEventListener("click", printRequestDocument);
     $("downloadRequestBtn").addEventListener("click", downloadRequestHtml);
     $("shareRequestBtn").addEventListener("click", shareRequest);
     $("copyEmailBodyBtn").addEventListener("click", copyEmailBody);
@@ -1904,14 +1982,29 @@ Kind regards,
       $("requestPreview").innerHTML = requestHtml(task);
       updateEmailFlowNote(task);
     }
+    function selectedCustomTemplate(){
+      const requestType = $("requestTemplateType")?.value || "";
+      if(!requestType.startsWith("custom:")) return null;
+      return templates.find(t => t.id === requestType.slice(7)) || null;
+    }
+    function selectedRequestIsPdfOverlay(){
+      const tpl = selectedCustomTemplate();
+      return Boolean(tpl && tpl.kind === "pdfOverlay" && tpl.pdfBase64);
+    }
     function requestDocumentHtml(task){
       return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Payment Request</title><style>${document.querySelector("style").textContent} body{padding:24px;color:#111;background:#fff}@media print{body{padding:0}}</style></head><body>${requestHtml(task)}</body></html>`;
     }
-    function requestDocumentBlob(){
+    async function requestDocumentBlob(){
       const task = selectedRequestTask();
       if(!task) return null;
+      if(selectedRequestIsPdfOverlay()){
+        const tpl = selectedCustomTemplate();
+        return buildFilledPdfBlob(tpl, task);
+      }
       return new Blob([requestDocumentHtml(task)], {type:"text/html;charset=utf-8"});
     }
+    function requestDocumentExtension(){ return selectedRequestIsPdfOverlay() ? "pdf" : "html"; }
+    function requestDocumentMime(){ return selectedRequestIsPdfOverlay() ? "application/pdf" : "text/html"; }
     function requestFileBaseName(task){
       const requestType = $("requestTemplateType").value;
       const custom = requestType.startsWith("custom:") ? templates.find(t => t.id === requestType.slice(7)) : null;
@@ -1930,21 +2023,40 @@ Kind regards,
       if(!task){ box.innerHTML = "Complete a task first, then choose it here to prepare the request and email."; return; }
       const hasEmail = Boolean(task.clientEmail);
       const canFileShare = !!(navigator.canShare && typeof File !== "undefined");
-      box.innerHTML = `<strong>Suggested send flow:</strong> ${canFileShare ? "try Share file first on iPhone, then choose Mail/Gmail if offered" : "download the file, then attach it manually"}. ${hasEmail ? "The Email draft button will address the email to the saved client email." : "No client email is saved for this task, so the draft will open without a recipient."}`;
+      const fileType = selectedRequestIsPdfOverlay() ? "PDF" : "HTML request file";
+      box.innerHTML = `<strong>Suggested send flow:</strong> ${canFileShare ? `try Share file first on iPhone; this request will be generated as a ${fileType}` : `download the ${fileType}, then attach it manually`}. ${hasEmail ? "The Email draft button will address the email to the saved client email." : "No client email is saved for this task, so the draft will open without a recipient."}`;
     }
-    function downloadRequestHtml(){
+    async function printRequestDocument(){
+      renderRequestPreview();
       const task = selectedRequestTask();
-      const blob = requestDocumentBlob();
-      if(!task || !blob){ showToast("Choose a completed task first"); return; }
-      downloadBlob(`${requestFileBaseName(task)}.html`, blob, "text/html;charset=utf-8");
-      showToast("Payment request file downloaded");
+      if(!task){ showToast("Choose a completed task first"); return; }
+      if(selectedRequestIsPdfOverlay()){
+        try{
+          const blob = await requestDocumentBlob();
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+          showToast("Filled PDF opened. Use the browser print/share option.");
+        }catch(e){ showToast("Could not generate the filled PDF. Check the template fields."); }
+        return;
+      }
+      window.print();
+    }
+    async function downloadRequestHtml(){
+      const task = selectedRequestTask();
+      try{
+        const blob = await requestDocumentBlob();
+        if(!task || !blob){ showToast("Choose a completed task first"); return; }
+        downloadBlob(`${requestFileBaseName(task)}.${requestDocumentExtension()}`, blob, requestDocumentMime());
+        showToast(selectedRequestIsPdfOverlay() ? "Filled PDF downloaded" : "Payment request file downloaded");
+      }catch(e){ showToast("Could not generate this request file"); }
     }
     async function shareRequest(){
       const task = selectedRequestTask();
-      const blob = requestDocumentBlob();
+      let blob;
+      try{ blob = await requestDocumentBlob(); }catch(e){ blob = null; }
       if(!task || !blob){ showToast("Choose a completed task first"); return; }
-      const filename = `${requestFileBaseName(task)}.html`;
-      const file = new File([blob], filename, {type:"text/html"});
+      const filename = `${requestFileBaseName(task)}.${requestDocumentExtension()}`;
+      const file = new File([blob], filename, {type:requestDocumentMime()});
       const subject = requestSubject(task);
       const text = buildEmailBody(task);
       try{
@@ -2016,17 +2128,31 @@ Request number: ${requestNumber(task)}`;
       showToast("Email draft opened. Attach the request file before sending.");
     }
     function utf8Base64(str){
-      return btoa(unescape(encodeURIComponent(str))).replace(/.{1,76}/g, "$&\\r\\n").trim();
+      return btoa(unescape(encodeURIComponent(str))).replace(/.{1,76}/g, "$&\r\n").trim();
     }
-    function downloadEmailPackage(){
+    async function blobBase64(blob){
+      const buffer = await blob.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for(let i=0;i<bytes.length;i+=0x8000){
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i+0x8000));
+      }
+      return btoa(binary).replace(/.{1,76}/g, "$&\r\n").trim();
+    }
+    async function downloadEmailPackage(){
       const task = selectedRequestTask();
       if(!task){ showToast("Choose a completed task first"); return; }
-      const html = requestDocumentHtml(task);
+      let blob;
+      try{ blob = await requestDocumentBlob(); }catch(e){ blob = null; }
+      if(!blob){ showToast("Could not generate attachment"); return; }
       const boundary = `----TaskPaymentTracker${Date.now()}`;
-      const filename = `${requestFileBaseName(task)}.html`;
+      const ext = requestDocumentExtension();
+      const mime = requestDocumentMime();
+      const filename = `${requestFileBaseName(task)}.${ext}`;
       const toHeader = (task.clientEmail || "").replace(/[\r\n]/g, " ");
       const subjectHeader = requestSubject(task).replace(/[\r\n]/g, " ");
       const body = buildEmailBody(task) + "\n\nThe payment request file is attached to this email package. If your email app opens this as a received message rather than a draft, create a new email and attach the downloaded request file manually.";
+      const attachmentB64 = mime === "text/html" ? utf8Base64(await blob.text()) : await blobBase64(blob);
       const eml = [
         `To: ${toHeader}`,
         `Subject: ${subjectHeader}`,
@@ -2040,15 +2166,15 @@ Request number: ${requestNumber(task)}`;
         utf8Base64(body),
         "",
         `--${boundary}`,
-        `Content-Type: text/html; charset=UTF-8; name=\"${filename}\"`,
+        `Content-Type: ${mime}; name=\"${filename}\"`,
         "Content-Transfer-Encoding: base64",
         `Content-Disposition: attachment; filename=\"${filename}\"`,
         "",
-        utf8Base64(html),
+        attachmentB64,
         "",
         `--${boundary}--`,
         ""
-      ].join("\\r\\n");
+      ].join("\r\n");
       downloadBlob(`${requestFileBaseName(task)}-email-package.eml`, eml, "message/rfc822;charset=utf-8");
       showToast(".eml email package downloaded");
     }
@@ -2065,6 +2191,8 @@ Request number: ${requestNumber(task)}`;
 
     const TEMPLATE_FIELD_OPTIONS = [
       ["", "Choose app field"],
+      ["fixed_text", "Fixed text saved in template"],
+      ["ask_each_time", "Editable/ask each time"],
       ["full_name", "Setup: full name"],
       ["first_name", "Setup: first name"],
       ["last_name", "Setup: last name"],
@@ -2142,8 +2270,19 @@ Request number: ${requestNumber(task)}`;
       }
       return found;
     }
-    function fieldSelectHtml(placeholder, selected){
-      return `<select data-placeholder="${escapeHtml(placeholder.raw)}">${TEMPLATE_FIELD_OPTIONS.map(([value,label]) => `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(label)}</option>`).join("")}</select>`;
+    function mappingValue(mappingEntry){
+      if(typeof mappingEntry === "string") return mappingEntry;
+      if(mappingEntry && typeof mappingEntry === "object") return mappingEntry.field || mappingEntry.type || "";
+      return "";
+    }
+    function mappingFixedValue(mappingEntry){
+      return mappingEntry && typeof mappingEntry === "object" ? (mappingEntry.value || "") : "";
+    }
+    function mappingAskLabel(mappingEntry){
+      return mappingEntry && typeof mappingEntry === "object" ? (mappingEntry.label || "") : "";
+    }
+    function fieldSelectHtml(rawPlaceholder, selected){
+      return `<select data-placeholder="${escapeHtml(rawPlaceholder)}">${TEMPLATE_FIELD_OPTIONS.map(([value,label]) => `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(label)}</option>`).join("")}</select>`;
     }
     function renderPlaceholderMapping(placeholders, existingMap = {}){
       currentTemplatePlaceholders = placeholders;
@@ -2153,14 +2292,22 @@ Request number: ${requestNumber(task)}`;
         return;
       }
       box.innerHTML = placeholders.map(ph => {
-        const selected = existingMap[ph.raw] || autoMapPlaceholder(ph.name);
-        return `<div class="placeholder-row"><div><label>Placeholder</label><div class="mono badge">${escapeHtml(ph.raw)}</div><div class="small muted">Detected name: ${escapeHtml(ph.name)}</div></div><div><label>Fill with</label>${fieldSelectHtml(ph, selected)}</div></div>`;
+        const existing = existingMap[ph.raw];
+        const selected = mappingValue(existing) || autoMapPlaceholder(ph.name);
+        const fixed = mappingFixedValue(existing);
+        const ask = mappingAskLabel(existing) || ph.name;
+        return `<div class="placeholder-row"><div><label>Placeholder</label><div class="mono badge">${escapeHtml(ph.raw)}</div><div class="small muted">Detected name: ${escapeHtml(ph.name)}</div></div><div><label>Fill with</label>${fieldSelectHtml(ph.raw, selected)}<input data-placeholder-fixed="${escapeHtml(ph.raw)}" placeholder="Fixed text or editable label" value="${escapeHtml(fixed || ask)}" style="margin-top:7px" /><div class="field-note">Use this box only for fixed text or ask-each-time labels.</div></div></div>`;
       }).join("");
     }
     function currentTemplateMapping(){
       const map = {};
       document.querySelectorAll("#placeholderMapping select[data-placeholder]").forEach(sel => {
-        map[sel.dataset.placeholder] = sel.value;
+        const raw = sel.dataset.placeholder;
+        const val = sel.value;
+        const extra = Array.from(document.querySelectorAll("#placeholderMapping input[data-placeholder-fixed]")).find(inp => inp.dataset.placeholderFixed === raw)?.value || "";
+        if(val === "fixed_text") map[raw] = {type:"fixed_text", value:extra};
+        else if(val === "ask_each_time") map[raw] = {type:"ask_each_time", label:extra || raw.replace(/[{}]/g,"")};
+        else map[raw] = val;
       });
       return map;
     }
@@ -2213,10 +2360,17 @@ Request number: ${requestNumber(task)}`;
       };
       return val[key] ?? "";
     }
+    function mappingEntryValue(entry, task){
+      if(typeof entry === "string") return templateFieldValue(entry, task);
+      if(entry && entry.type === "fixed_text") return entry.value || "";
+      if(entry && entry.type === "ask_each_time") return entry.value || `[${entry.label || "Editable value"}]`;
+      if(entry && entry.field) return templateFieldValue(entry.field, task);
+      return "";
+    }
     function applyTemplate(rawTemplate, mapping, task){
       let html = templateLooksHtml(rawTemplate) ? sanitiseTemplateHtml(rawTemplate) : templateTextToHtml(rawTemplate);
-      Object.entries(mapping || {}).forEach(([placeholder, key]) => {
-        const value = templateFieldValue(key, task);
+      Object.entries(mapping || {}).forEach(([placeholder, entry]) => {
+        const value = mappingEntryValue(entry, task);
         html = html.split(placeholder).join(escapeHtml(value).replace(/\n/g,"<br>"));
       });
       return `<div class="custom-template-doc">${html}</div>`;
@@ -2224,7 +2378,183 @@ Request number: ${requestNumber(task)}`;
     function customTemplateRequestHtml(task, templateId){
       const tpl = templates.find(t => t.id === templateId);
       if(!tpl) return `<div class="empty">This custom template is no longer available.</div>`;
+      if(tpl.kind === "pdfOverlay") return pdfOverlayRequestPreview(tpl, task);
       return applyTemplate(tpl.raw || "", tpl.mapping || {}, task);
+    }
+    function arrayBufferToBase64(buffer){
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for(let i=0;i<bytes.length;i+=0x8000){ binary += String.fromCharCode.apply(null, bytes.subarray(i,i+0x8000)); }
+      return btoa(binary);
+    }
+    function base64ToUint8Array(base64){
+      const binary = atob(base64 || "");
+      const bytes = new Uint8Array(binary.length);
+      for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+      return bytes;
+    }
+    function isPdfTemplateKind(){ return ($("templateKind")?.value || currentTemplateKind) === "pdfOverlay"; }
+    function updateTemplateModeUi(){
+      currentTemplateKind = $("templateKind")?.value || "htmlTemplate";
+      const isPdf = currentTemplateKind === "pdfOverlay";
+      $("pdfBuilder")?.classList.toggle("hidden", !isPdf);
+      $("templateSource")?.closest("div")?.classList.toggle("hidden", isPdf);
+      $("analyseTemplateBtn")?.classList.toggle("hidden", isPdf);
+      $("insertPlaceholderBtn")?.classList.toggle("hidden", isPdf);
+      $("insertPlaceholderField")?.closest("div")?.classList.toggle("hidden", isPdf);
+      if(!isPdf) renderPlaceholderMapping(currentTemplatePlaceholders, currentTemplateMapping());
+    }
+    function populateInsertPlaceholderOptions(){
+      const sel = $("insertPlaceholderField");
+      if(!sel) return;
+      sel.innerHTML = TEMPLATE_FIELD_OPTIONS.filter(([v]) => v && v !== "fixed_text" && v !== "ask_each_time").map(([value,label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("");
+    }
+    function insertPlaceholderAtCursor(){
+      const field = $("insertPlaceholderField")?.value;
+      const area = $("templateSource");
+      if(!field || !area) return;
+      const token = `{{${field}}}`;
+      const start = area.selectionStart || 0;
+      const end = area.selectionEnd || 0;
+      area.value = area.value.slice(0,start) + token + area.value.slice(end);
+      area.focus();
+      area.selectionStart = area.selectionEnd = start + token.length;
+      analyseTemplateFromForm(currentTemplateMapping());
+    }
+    function pdfFieldValue(field, task){
+      if(field.field === "fixed_text") return field.fixed || "";
+      if(field.field === "ask_each_time") return field.fixed || `[${field.label || "Editable"}]`;
+      return templateFieldValue(field.field, task);
+    }
+    function pdfOverlayRequestPreview(tpl, task){
+      const fields = tpl.pdfFields || [];
+      return `<div class="pdf-preview-card"><h2>${escapeHtml(tpl.name || "PDF overlay template")}</h2><p>This is a PDF overlay template. The original PDF layout is preserved when you use <strong>Download file</strong>, <strong>Share file</strong>, or <strong>Print/Save PDF</strong>. Inline preview shows the fields that will be filled.</p><div class="pdf-preview-fields">${fields.length ? fields.map(f => `<div class="badge">Page ${f.page}: ${escapeHtml(f.label || f.field || "Field")} = <strong>${escapeHtml(pdfFieldValue(f, task) || "")}</strong></div>`).join("") : `<div class="empty">No PDF fill fields saved in this template.</div>`}</div></div>`;
+    }
+    async function buildFilledPdfBlob(tpl, task){
+      if(!window.PDFLib) throw new Error("PDF fill library unavailable");
+      const bytes = base64ToUint8Array(tpl.pdfBase64 || "");
+      const pdfDoc = await PDFLib.PDFDocument.load(bytes);
+      const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+      const pages = pdfDoc.getPages();
+      (tpl.pdfFields || []).forEach(field => {
+        const page = pages[(Number(field.page || 1) - 1)] || pages[0];
+        if(!page) return;
+        const value = String(pdfFieldValue(field, task) || "");
+        const { width, height } = page.getSize();
+        const x = Number(field.x || 0) * width;
+        const boxH = Number(field.h || .03) * height;
+        const yTop = Number(field.y || 0) * height;
+        const y = height - yTop - boxH + Math.max(2, boxH * .22);
+        page.drawText(value, {
+          x,
+          y,
+          size: Number(field.fontSize || 10),
+          font,
+          color: PDFLib.rgb(0,0,0),
+          maxWidth: Math.max(30, Number(field.w || .2) * width)
+        });
+      });
+      const out = await pdfDoc.save();
+      return new Blob([out], {type:"application/pdf"});
+    }
+    async function loadPdfForTemplate(file, existingFields = []){
+      if(!window.pdfjsLib){ showToast("PDF preview library is still loading. Try again in a moment."); return; }
+      if(!file && !pdfTemplateState.base64){ return; }
+      let bytes;
+      if(file){
+        const buffer = await file.arrayBuffer();
+        pdfTemplateState.base64 = arrayBufferToBase64(buffer);
+        bytes = new Uint8Array(buffer);
+        pdfTemplateState.fileName = file.name;
+      } else bytes = base64ToUint8Array(pdfTemplateState.base64);
+      pdfTemplateState.bytes = bytes;
+      try{
+        if(window.pdfjsLib.GlobalWorkerOptions) window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+        pdfTemplateState.doc = await window.pdfjsLib.getDocument({data:bytes}).promise;
+        pdfTemplateState.pageCount = pdfTemplateState.doc.numPages || 1;
+        pdfTemplateState.page = Math.min(Math.max(1, pdfTemplateState.page || 1), pdfTemplateState.pageCount);
+        pdfTemplateState.fields = existingFields.length ? existingFields : (pdfTemplateState.fields || []);
+        await renderPdfTemplatePage();
+        showToast("PDF loaded. Tap the page to add fill boxes.");
+      }catch(e){
+        $("templatePreviewBox").innerHTML = `<div class="notice"><strong>PDF selected</strong><br>The PDF was saved for overlay use, but the browser could not render a preview. You can try again after refreshing, or use an HTML/Word template.</div>`;
+        showToast("PDF preview unavailable");
+      }
+    }
+    async function renderPdfTemplatePage(){
+      const canvas = $("pdfTemplateCanvas");
+      const stage = $("pdfStage");
+      if(!canvas || !stage || !pdfTemplateState.doc) return;
+      const page = await pdfTemplateState.doc.getPage(pdfTemplateState.page);
+      const viewport0 = page.getViewport({scale:1});
+      const maxWidth = Math.min(760, Math.max(320, (document.querySelector(".card")?.clientWidth || 720) - 54));
+      const scale = maxWidth / viewport0.width;
+      const viewport = page.getViewport({scale});
+      canvas.width = Math.round(viewport.width);
+      canvas.height = Math.round(viewport.height);
+      pdfTemplateState.canvasWidth = canvas.width;
+      pdfTemplateState.canvasHeight = canvas.height;
+      stage.style.width = canvas.width + "px";
+      stage.style.height = canvas.height + "px";
+      const ctx = canvas.getContext("2d");
+      await page.render({canvasContext:ctx, viewport}).promise;
+      $("pdfPageLabel").textContent = `PDF: ${pdfTemplateState.fileName || "template.pdf"} · page ${pdfTemplateState.page} of ${pdfTemplateState.pageCount}`;
+      renderPdfFieldBoxes();
+      renderPdfFieldList();
+    }
+    function addPdfFieldAt(xNorm=.12, yNorm=.12){
+      const id = "fld_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,6);
+      const field = {id, page:pdfTemplateState.page || 1, x:xNorm, y:yNorm, w:.24, h:.035, field:"full_name", label:"Full name", fixed:"", fontSize:10};
+      pdfTemplateState.fields.push(field);
+      pdfTemplateState.selected = id;
+      renderPdfFieldBoxes();
+      renderPdfFieldList();
+    }
+    function renderPdfFieldBoxes(){
+      const stage = $("pdfStage");
+      if(!stage) return;
+      stage.querySelectorAll(".pdf-field-box").forEach(n => n.remove());
+      const cw = pdfTemplateState.canvasWidth || $("pdfTemplateCanvas")?.width || 1;
+      const ch = pdfTemplateState.canvasHeight || $("pdfTemplateCanvas")?.height || 1;
+      pdfTemplateState.fields.filter(f => Number(f.page) === Number(pdfTemplateState.page)).forEach(f => {
+        const div = document.createElement("div");
+        div.className = "pdf-field-box" + (pdfTemplateState.selected === f.id ? " selected" : "");
+        div.style.left = (f.x * cw) + "px";
+        div.style.top = (f.y * ch) + "px";
+        div.style.width = (f.w * cw) + "px";
+        div.style.height = (f.h * ch) + "px";
+        div.textContent = f.label || f.field || "Field";
+        div.addEventListener("click", ev => { ev.stopPropagation(); pdfTemplateState.selected = f.id; renderPdfFieldBoxes(); renderPdfFieldList(); });
+        stage.appendChild(div);
+      });
+    }
+    function renderPdfFieldList(){
+      const list = $("pdfFieldList");
+      if(!list) return;
+      const fields = pdfTemplateState.fields.filter(f => Number(f.page) === Number(pdfTemplateState.page));
+      list.innerHTML = fields.length ? fields.map(f => `<div class="field-editor-row ${pdfTemplateState.selected === f.id ? "selected" : ""}" data-field-row="${f.id}"><div><label>Label</label><input data-pdf-field-prop="label" data-id="${f.id}" value="${escapeHtml(f.label || "")}" placeholder="e.g. Full name" /></div><div><label>Fill with</label><select data-pdf-field-prop="field" data-id="${f.id}">${TEMPLATE_FIELD_OPTIONS.map(([v,l]) => `<option value="${escapeHtml(v)}" ${v === f.field ? "selected" : ""}>${escapeHtml(l)}</option>`).join("")}</select></div><div><label>Size</label><input data-pdf-field-prop="fontSize" data-id="${f.id}" type="number" min="6" max="24" value="${escapeHtml(f.fontSize || 10)}" /></div><div><label>Width %</label><input data-pdf-field-prop="w" data-id="${f.id}" type="number" min="5" max="90" value="${Math.round((f.w || .24)*100)}" /></div><button class="secondary" onclick="selectPdfField('${f.id}')">Select</button><div class="span-2"><label>Fixed text / editable label</label><input data-pdf-field-prop="fixed" data-id="${f.id}" value="${escapeHtml(f.fixed || "")}" placeholder="Used for fixed text or ask-each-time" /></div></div>`).join("") : `<div class="empty">No fill boxes on this page yet. Click/tap the PDF preview or use Add field.</div>`;
+      list.querySelectorAll("input[data-pdf-field-prop], select[data-pdf-field-prop]").forEach(el => {
+        el.addEventListener("input", () => updatePdfFieldFromInput(el));
+        el.addEventListener("change", () => updatePdfFieldFromInput(el));
+      });
+    }
+    window.selectPdfField = function(id){ pdfTemplateState.selected = id; renderPdfFieldBoxes(); renderPdfFieldList(); };
+    function updatePdfFieldFromInput(el){
+      const f = pdfTemplateState.fields.find(x => x.id === el.dataset.id);
+      if(!f) return;
+      const prop = el.dataset.pdfFieldProp;
+      if(prop === "w") f.w = Math.max(.05, Math.min(.9, Number(el.value || 24)/100));
+      else if(prop === "fontSize") f.fontSize = Number(el.value || 10);
+      else f[prop] = el.value;
+      if(prop === "field" && !f.label){ f.label = TEMPLATE_FIELD_OPTIONS.find(([v]) => v === el.value)?.[1] || el.value; }
+      renderPdfFieldBoxes();
+    }
+    function removeSelectedPdfField(){
+      if(!pdfTemplateState.selected){ showToast("Select a PDF field first"); return; }
+      pdfTemplateState.fields = pdfTemplateState.fields.filter(f => f.id !== pdfTemplateState.selected);
+      pdfTemplateState.selected = null;
+      renderPdfFieldBoxes();
+      renderPdfFieldList();
     }
     function analyseTemplateFromForm(existingMap = {}){
       const raw = $("templateSource").value;
@@ -2236,59 +2566,105 @@ Request number: ${requestNumber(task)}`;
     function clearTemplateForm(){
       editingTemplateId = null;
       currentTemplatePlaceholders = [];
+      pdfTemplateState = { fileName:"", base64:"", bytes:null, doc:null, pageCount:0, page:1, fields:[], selected:null, canvasWidth:0, canvasHeight:0 };
       $("templateName").value = "";
       $("templateFile").value = "";
       $("templateSource").value = "";
-      $("placeholderMapping").innerHTML = `<div class="empty">Upload or paste a template, then analyse placeholders.</div>`;
+      $("templateKind").value = "htmlTemplate";
+      updateTemplateModeUi();
+      $("placeholderMapping").innerHTML = `<div class="empty">Upload, paste, or insert placeholders, then analyse the template.</div>`;
       $("templatePreviewBox").innerHTML = `Choose a saved template or analyse a new one to preview detected placeholders.`;
+      $("pdfFieldList").innerHTML = "";
+      $("pdfPageLabel").textContent = "No PDF loaded.";
+      const c = $("pdfTemplateCanvas"); if(c){ c.width = 0; c.height = 0; }
     }
     function saveTemplateFromForm(){
       const name = $("templateName").value.trim();
-      const raw = $("templateSource").value;
       if(!name){ showToast("Add a template name first"); return; }
-      if(!raw.trim()){ showToast("Upload or paste a template first"); return; }
-      const placeholders = currentTemplatePlaceholders.length ? currentTemplatePlaceholders : analyseTemplateFromForm();
-      if(!placeholders.length){
-        if(!confirm("No placeholders were detected. Save this template anyway?")) return;
-      }
-      const mapping = currentTemplateMapping();
       const now = new Date().toISOString();
-      const tpl = {
+      const base = {
         id: editingTemplateId || "tpl_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8),
         name,
-        raw,
-        placeholders,
-        mapping,
         createdAt: editingTemplateId ? (templates.find(t => t.id === editingTemplateId)?.createdAt || now) : now,
         updatedAt: now
       };
+      let tpl;
+      if(isPdfTemplateKind()){
+        if(!pdfTemplateState.base64){ showToast("Upload a PDF first"); return; }
+        if(!pdfTemplateState.fields.length){
+          if(!confirm("No fill boxes have been added. Save this PDF template anyway?")) return;
+        }
+        tpl = {
+          ...base,
+          kind:"pdfOverlay",
+          pdfFileName:pdfTemplateState.fileName || "template.pdf",
+          pdfBase64:pdfTemplateState.base64,
+          pdfFields:pdfTemplateState.fields,
+          placeholders:[],
+          mapping:{},
+          raw:""
+        };
+      } else {
+        const raw = $("templateSource").value;
+        if(!raw.trim()){ showToast("Upload or paste a template first"); return; }
+        const placeholders = currentTemplatePlaceholders.length ? currentTemplatePlaceholders : analyseTemplateFromForm();
+        if(!placeholders.length){
+          if(!confirm("No placeholders were detected. Save this template anyway?")) return;
+        }
+        tpl = {
+          ...base,
+          kind:"htmlTemplate",
+          raw,
+          placeholders,
+          mapping:currentTemplateMapping()
+        };
+      }
       const idx = templates.findIndex(t => t.id === tpl.id);
       if(idx >= 0) templates[idx] = tpl; else templates.push(tpl);
       saveTemplates();
       editingTemplateId = tpl.id;
       showToast("Template saved");
+      renderTemplateManager();
     }
     function renderTemplateManager(){
       const list = $("savedTemplatesList");
       if(!list) return;
-      list.innerHTML = templates.length ? templates.map(t => `<div class="template-item"><div><strong>${escapeHtml(t.name || "Untitled template")}</strong><div class="small muted">${(t.placeholders || []).length} placeholder(s) · updated ${fmtDate((t.updatedAt || t.createdAt || "").slice(0,10))}</div></div><div class="btn-row"><button class="secondary" onclick="loadTemplateForEdit('${t.id}')">Edit</button><button class="secondary" onclick="previewSavedTemplate('${t.id}')">Preview</button><button class="danger" onclick="deleteTemplate('${t.id}')">Delete</button></div></div>`).join("") : `<div class="empty">No saved templates yet.</div>`;
+      list.innerHTML = templates.length ? templates.map(t => {
+        const isPdf = t.kind === "pdfOverlay";
+        const count = isPdf ? `${(t.pdfFields || []).length} PDF field(s)` : `${(t.placeholders || []).length} placeholder(s)`;
+        const badge = isPdf ? `<span class="template-mode-pill">PDF overlay</span>` : `<span class="template-mode-pill">HTML/Word/Text</span>`;
+        return `<div class="template-item"><div><strong>${escapeHtml(t.name || "Untitled template")}</strong><div>${badge}</div><div class="small muted">${count} · updated ${fmtDate((t.updatedAt || t.createdAt || "").slice(0,10))}</div></div><div class="btn-row"><button class="secondary" onclick="loadTemplateForEdit('${t.id}')">Edit</button><button class="secondary" onclick="previewSavedTemplate('${t.id}')">Preview</button><button class="danger" onclick="deleteTemplate('${t.id}')">Delete</button></div></div>`;
+      }).join("") : `<div class="empty">No saved templates yet.</div>`;
       renderRequestTemplateOptions();
     }
-    window.loadTemplateForEdit = function(id){
+    window.loadTemplateForEdit = async function(id){
       const tpl = templates.find(t => t.id === id);
       if(!tpl) return;
       editingTemplateId = id;
       $("templateName").value = tpl.name || "";
-      $("templateSource").value = tpl.raw || "";
-      renderPlaceholderMapping(tpl.placeholders || detectPlaceholders(tpl.raw || ""), tpl.mapping || {});
-      $("templatePreviewBox").innerHTML = `<div class="small muted">Editing saved template.</div><div style="margin-top:8px">${(tpl.placeholders || []).map(p => `<span class="badge mono">${escapeHtml(p.raw)}</span>`).join(" ") || "No placeholders"}</div>`;
+      if(tpl.kind === "pdfOverlay"){
+        $("templateKind").value = "pdfOverlay";
+        updateTemplateModeUi();
+        $("templateSource").value = "";
+        currentTemplatePlaceholders = [];
+        pdfTemplateState = { fileName:tpl.pdfFileName || "template.pdf", base64:tpl.pdfBase64 || "", bytes:null, doc:null, pageCount:0, page:1, fields:JSON.parse(JSON.stringify(tpl.pdfFields || [])), selected:null, canvasWidth:0, canvasHeight:0 };
+        $("placeholderMapping").innerHTML = `<div class="empty">This is a PDF overlay template. Edit fields in the PDF builder below.</div>`;
+        await loadPdfForTemplate(null, pdfTemplateState.fields);
+        $("templatePreviewBox").innerHTML = pdfOverlayRequestPreview(tpl, selectedRequestTask() || tasks.find(t => t.taskStatus !== "cancelled") || {});
+      } else {
+        $("templateKind").value = "htmlTemplate";
+        updateTemplateModeUi();
+        $("templateSource").value = tpl.raw || "";
+        renderPlaceholderMapping(tpl.placeholders || detectPlaceholders(tpl.raw || ""), tpl.mapping || {});
+        $("templatePreviewBox").innerHTML = `<div class="small muted">Editing saved template.</div><div style="margin-top:8px">${(tpl.placeholders || []).map(p => `<span class="badge mono">${escapeHtml(p.raw)}</span>`).join(" ") || "No placeholders"}</div>`;
+      }
       switchTab("templates");
     };
     window.previewSavedTemplate = function(id){
       const tpl = templates.find(t => t.id === id);
       if(!tpl) return;
       const sampleTask = selectedRequestTask() || tasks.find(t => t.taskStatus !== "cancelled") || {};
-      $("templatePreviewBox").innerHTML = applyTemplate(tpl.raw || "", tpl.mapping || {}, sampleTask);
+      $("templatePreviewBox").innerHTML = tpl.kind === "pdfOverlay" ? pdfOverlayRequestPreview(tpl, sampleTask) : applyTemplate(tpl.raw || "", tpl.mapping || {}, sampleTask);
       switchTab("templates");
     };
     window.deleteTemplate = function(id){
@@ -2299,6 +2675,7 @@ Request number: ${requestNumber(task)}`;
       if(editingTemplateId === id) clearTemplateForm();
       saveTemplates();
       showToast("Template deleted");
+      renderTemplateManager();
     };
     function mergeTemplates(imported){
       const byId = new Map(templates.map(t => [t.id, t]));
@@ -2310,10 +2687,40 @@ Request number: ${requestNumber(task)}`;
       return Array.from(byId.values()).sort((a,b)=>(a.name || "").localeCompare(b.name || ""));
     }
     if($("templateFile")){
+      populateInsertPlaceholderOptions();
+      updateTemplateModeUi();
+      $("templateKind").addEventListener("change", updateTemplateModeUi);
+      $("insertPlaceholderBtn").addEventListener("click", insertPlaceholderAtCursor);
       $("templateFile").addEventListener("change", async () => {
         const file = $("templateFile").files[0];
         if(!file) return;
         if(!$("templateName").value.trim()) $("templateName").value = file.name.replace(/\.[^.]+$/, "");
+        const isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+        const isDocx = file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || /\.docx$/i.test(file.name);
+        if(isPdf){
+          $("templateKind").value = "pdfOverlay";
+          updateTemplateModeUi();
+          $("templateSource").value = "";
+          currentTemplatePlaceholders = [];
+          $("placeholderMapping").innerHTML = `<div class="empty">PDF selected: ${escapeHtml(file.name)}. Use the PDF overlay builder below to place fill boxes and map them to app fields.</div>`;
+          await loadPdfForTemplate(file, []);
+          $("templatePreviewBox").innerHTML = `<div class="notice"><strong>PDF overlay template</strong><br>The app keeps the original PDF and writes values over the positions you choose. This works best for typed/static PDFs. Scanned or complex PDFs may still need manual field placement.</div>`;
+          return;
+        }
+        $("templateKind").value = "htmlTemplate";
+        updateTemplateModeUi();
+        if(isDocx){
+          if(!window.mammoth){ showToast("Word converter is still loading. Try again in a moment, or save the file as HTML."); return; }
+          try{
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await window.mammoth.convertToHtml({arrayBuffer});
+            $("templateSource").value = result.value || "";
+            analyseTemplateFromForm();
+            $("templatePreviewBox").innerHTML = `<div class="editable-template-preview">${sanitiseTemplateHtml(result.value || "")}</div><div class="field-note">DOCX was converted to editable HTML. Please check formatting and add/move placeholders before saving.</div>`;
+            showToast("Word template converted for review");
+          }catch(e){ showToast("Could not convert this Word file. Try saving it as HTML first."); }
+          return;
+        }
         try{
           $("templateSource").value = await file.text();
           analyseTemplateFromForm();
@@ -2323,6 +2730,15 @@ Request number: ${requestNumber(task)}`;
       $("analyseTemplateBtn").addEventListener("click", () => analyseTemplateFromForm());
       $("saveTemplateBtn").addEventListener("click", saveTemplateFromForm);
       $("clearTemplateBtn").addEventListener("click", clearTemplateForm);
+      $("pdfTemplateCanvas").addEventListener("click", ev => {
+        if(!isPdfTemplateKind() || !pdfTemplateState.base64) return;
+        const rect = ev.currentTarget.getBoundingClientRect();
+        addPdfFieldAt((ev.clientX - rect.left) / rect.width, (ev.clientY - rect.top) / rect.height);
+      });
+      $("pdfAddFieldBtn").addEventListener("click", () => addPdfFieldAt(.12,.12));
+      $("pdfRemoveFieldBtn").addEventListener("click", removeSelectedPdfField);
+      $("pdfPrevPageBtn").addEventListener("click", async () => { if(pdfTemplateState.page > 1){ pdfTemplateState.page--; await renderPdfTemplatePage(); } });
+      $("pdfNextPageBtn").addEventListener("click", async () => { if(pdfTemplateState.page < pdfTemplateState.pageCount){ pdfTemplateState.page++; await renderPdfTemplatePage(); } });
     }
 
     function currentExportTasks(){
@@ -2642,10 +3058,10 @@ Request number: ${requestNumber(task)}`;
     }
     function alertRow(title, items, kind, description){
       if(!items.length) return "";
-      const sample = items.slice(0,3).map(t => `<div>${escapeHtml(t.taskTitle)} · ${escapeHtml(t.clientName)} · ${fmtDateTime(t.taskDate, t.startTime, t.endTime)}</div>`).join("");
-      const more = items.length > 3 ? `<div>+ ${items.length - 3} more</div>` : "";
+      const sample = items.slice(0,4).map(t => `<button type="button" class="alert-task-button" onclick="openTaskFromAlert('${t.id}')">${escapeHtml(t.taskTitle || 'Untitled task')} · ${escapeHtml(t.clientName || 'Client not set')}<span class="small">${fmtDateTime(t.taskDate, t.startTime, t.endTime)} · ${money(totalAmount(t), t.currency)}</span></button>`).join("");
+      const more = items.length > 4 ? `<div class="small muted">+ ${items.length - 4} more. Choose View on dashboard to see the full list.</div>` : "";
       return `<div class="alert-row ${kind}">
-        <div>
+        <div style="flex:1;min-width:0">
           <strong>${title}</strong>
           <div class="muted small">${description}</div>
           <div class="alert-items">${sample}${more}</div>
@@ -2653,6 +3069,22 @@ Request number: ${requestNumber(task)}`;
         <span class="count">${items.length}</span>
       </div>`;
     }
+    window.openTaskFromAlert = function(id){
+      closeLaunchAlerts();
+      switchTab("tasks");
+      if($("filterStatus")) $("filterStatus").value = "all";
+      if($("filterPayment")) $("filterPayment").value = "all";
+      if($("searchTasks")) $("searchTasks").value = "";
+      renderTasks();
+      setTimeout(() => {
+        const card = document.getElementById(`task-card-${id}`);
+        if(card){
+          card.scrollIntoView({behavior:"smooth", block:"center"});
+          card.classList.add("focus-flash");
+          setTimeout(() => card.classList.remove("focus-flash"), 2200);
+        }
+      }, 120);
+    };
     function maybeShowLaunchAlerts(){
       const alerts = buildLaunchAlerts();
       const total = alerts.dueToday.length + alerts.passedIncomplete.length + alerts.payNotRequested.length + alerts.paymentOverdue.length + alerts.dueSoon.length;
