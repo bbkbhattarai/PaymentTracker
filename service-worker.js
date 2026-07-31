@@ -1,4 +1,4 @@
-const CACHE_NAME = "task-payment-tracker-v8";
+const CACHE_NAME = "task-payment-tracker-v11";
 const APP_ASSETS = [
   "./",
   "./index.html",
