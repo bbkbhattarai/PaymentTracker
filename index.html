@@ -560,6 +560,7 @@
           <button class="secondary" id="setupBtn">Setup</button>
           <button class="secondary" id="backupNowBtn">Backup JSON</button>
           <button class="secondary" id="shareNowBtn">Share JSON</button>
+          <button class="secondary" id="importNowBtn">Import JSON</button>
         </div>
       </div>
     </header>
@@ -732,7 +733,7 @@
           <div class="card">
             <h2>First draft notes</h2>
             <div class="notice">
-              This app is designed to work without hosting. It stores records in the browser you use. Use the Device Sync JSON section to move the full app data between your phone and laptop. Previously entered names, emails, roles, task titles and locations are suggested as you type. On iPhone, the app now shows its own suggestion list instead of relying only on Safari suggestions.
+              This app is designed to work without hosting. It stores records in the browser you use. Use Setup > Import JSON or the Device Sync JSON section to move the full app data between your phone and laptop. Previously entered names, emails, roles, task titles and locations are suggested as you type. On iPhone, the app now shows its own suggestion list instead of relying only on Safari suggestions.
             </div>
             <h3 style="margin-top:18px">Setup and travel claims</h3>
             <p class="muted">Use the Setup button to save your name, address, bank details and mileage rate. If travel is claimable for a task, choose Yes and add the miles. The app calculates the travel amount and itemises it in the payment request.</p>
@@ -1065,6 +1066,32 @@ Kind regards,
           <button type="submit">Save setup</button>
           <button type="button" class="secondary" id="clearSetupBtn">Clear setup</button>
         </div>
+        <div class="notice" style="margin-top:18px">
+          <strong>Import from old app / another device</strong><br>
+          Use this to bring back a full JSON backup from an older version, phone, laptop or GitHub-hosted app. The same import tools are also available under the Export tab.
+        </div>
+        <label for="setupImportFile" style="margin-top:14px">Import JSON backup/sync file</label>
+        <input id="setupImportFile" type="file" accept="application/json,.json" />
+        <div class="form-grid" style="margin-top:10px">
+          <div>
+            <label for="setupImportMode">Import mode</label>
+            <select id="setupImportMode">
+              <option value="merge">Merge with this device, recommended</option>
+              <option value="replace">Replace this device with JSON file</option>
+            </select>
+          </div>
+          <div>
+            <label for="setupImportSettingsMode">Setup/profile</label>
+            <select id="setupImportSettingsMode">
+              <option value="import">Import setup from JSON</option>
+              <option value="keep">Keep this device setup</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button type="button" class="secondary" id="setupImportJsonBtn">Import JSON</button>
+        </div>
+        <p class="muted small">Merge keeps the newest version of each task. Replace should only be used when the JSON file has the correct final list.</p>
       </form>
     </div>
   </div>
@@ -1205,11 +1232,15 @@ Kind regards,
     $("addFromTasksBtn").addEventListener("click", () => { resetForm(); switchTab("add"); });
     $("backupNowBtn").addEventListener("click", () => downloadJsonBackup());
     $("shareNowBtn").addEventListener("click", () => shareJsonBackup());
+    $("importNowBtn").addEventListener("click", () => { openSetup(); setTimeout(() => $("setupImportFile")?.scrollIntoView({behavior:"smooth", block:"center"}), 80); });
     $("setupBtn").addEventListener("click", openSetup);
     $("closeSetupBtn").addEventListener("click", closeSetup);
     $("setupModalBackdrop").addEventListener("click", (e) => { if(e.target.id === "setupModalBackdrop") closeSetup(); });
     $("setupForm").addEventListener("submit", (e) => { e.preventDefault(); saveSetupFromForm(); });
     $("clearSetupBtn").addEventListener("click", clearSetup);
+    $("setupImportJsonBtn").addEventListener("click", async () => {
+      await importSyncJsonFromInputs("setupImportFile", "setupImportMode", "setupImportSettingsMode", true);
+    });
 
     function openSetup(){
       $("setupFirstName").value = settings.firstName || "";
@@ -2364,7 +2395,7 @@ Request number: ${requestNumber(task)}`;
     function syncPayload(){
       return {
         app:"Task Payment Tracker",
-        version:"1.5",
+        version:"1.6",
         syncFormat:"complete-device-sync-json",
         exportedAt:new Date().toISOString(),
         tasks: tasks.map(normaliseTaskForSync),
@@ -2429,16 +2460,17 @@ Request number: ${requestNumber(task)}`;
     $("downloadJsonBtn").addEventListener("click", downloadJsonBackup);
     $("shareJsonBtn").addEventListener("click", shareJsonBackup);
     $("printSummaryBtn").addEventListener("click", printSummary);
-    $("importJsonBtn").addEventListener("click", async () => {
-      const file = $("importFile").files[0];
+    async function importSyncJsonFromInputs(fileInputId, modeSelectId, settingsModeSelectId, refreshSetupAfterImport = false){
+      const fileInput = $(fileInputId);
+      const file = fileInput?.files?.[0];
       if(!file){ showToast("Choose a JSON sync file first"); return; }
       try{
         const text = await file.text();
         const data = JSON.parse(text);
         const importedTasks = Array.isArray(data) ? data : data.tasks;
         if(!Array.isArray(importedTasks)) throw new Error("Invalid sync file");
-        const mode = $("importMode").value;
-        const settingsMode = $("importSettingsMode").value;
+        const mode = $(modeSelectId)?.value || "merge";
+        const settingsMode = $(settingsModeSelectId)?.value || "keep";
         const warning = mode === "replace"
           ? "This will replace all tasks currently stored in this browser with the JSON file. Continue?"
           : "This will merge the JSON file with tasks currently stored in this browser. Continue?";
@@ -2459,8 +2491,14 @@ Request number: ${requestNumber(task)}`;
           localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
         }
         saveTasks();
+        renderAll();
+        if(refreshSetupAfterImport) openSetup();
+        if(fileInput) fileInput.value = "";
         showToast(mode === "replace" ? `Imported ${tasks.length} task(s)` : `Merged: ${result.added} added, ${result.updated} updated`);
       }catch(e){ showToast("Could not import this JSON sync file"); }
+    }
+    $("importJsonBtn").addEventListener("click", async () => {
+      await importSyncJsonFromInputs("importFile", "importMode", "importSettingsMode");
     });
 
     function uniqueSuggestions(values){
