@@ -563,6 +563,54 @@
     }
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .hidden{display:none !important}
+
+    .visual-template-wrap{
+      border:1px solid var(--line);
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .visual-template-toolbar{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      padding:10px;
+      background:#fbf9ff;
+      border-bottom:1px solid var(--line);
+    }
+    .visual-template-editor{
+      min-height:280px;
+      max-height:560px;
+      overflow:auto;
+      padding:18px;
+      background:#fff;
+      color:var(--text);
+      outline:none;
+      line-height:1.45;
+    }
+    .visual-template-editor:focus{box-shadow:inset 0 0 0 3px rgba(75,0,130,.10)}
+    .visual-template-editor table{border-collapse:collapse;max-width:100%;width:auto}
+    .visual-template-editor td,.visual-template-editor th{border:1px solid #cfc8dd;padding:7px;vertical-align:top}
+    .visual-template-editor img{max-width:100%;height:auto}
+    .source-editor-hidden{display:none !important}
+    .cloud-status{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      padding:10px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fbf9ff;
+      margin-top:10px;
+    }
+    .cloud-dot{width:10px;height:10px;border-radius:50%;background:#9ca3af;display:inline-block}
+    .cloud-dot.ok{background:var(--success)}
+    .cloud-dot.warn{background:var(--warning)}
+    .cloud-dot.bad{background:var(--danger)}
+    .sync-step{border-left:4px solid var(--brand);padding:8px 10px;background:#fff;border-radius:10px;margin:8px 0}
     @media(max-width:900px){
       .grid.two,.grid.three,.grid.four{grid-template-columns:1fr}
       .hero-row{display:block}
@@ -883,10 +931,10 @@ Kind regards,
           <div class="card">
             <h2>Template Builder</h2>
             <div class="notice">
-              v14 adds a guided Template Builder. HTML/text templates remain the most reliable. DOCX import is supported when the Word converter loads in the browser, and PDF templates use an overlay method: the original PDF is kept, and you place fill boxes over the spaces that need completing.
+              v16 adds a visual Template Builder plus optional Google Drive master JSON sync. Word/HTML/text templates open as an editable document view by default. PDF templates use the overlay method: the original PDF is kept, and you place fill boxes over the spaces that need completing.
             </div>
             <div class="library-note">
-              First use needs internet access for the free browser libraries used for DOCX/PDF processing. Once the app has loaded, saved templates stay in your app data and can be backed up or synced by JSON.
+              First use needs internet access for the free browser libraries used for DOCX/PDF processing. Saved templates stay in your app data and can be backed up by JSON or synced through the Google Drive bridge if configured.
             </div>
             <div class="form-grid" style="margin-top:12px">
               <div>
@@ -909,9 +957,20 @@ Kind regards,
                 <label for="insertPlaceholderField">Insert placeholder</label>
                 <select id="insertPlaceholderField"></select>
               </div>
-              <div class="span-2">
-                <label for="templateSource">Editable template HTML/text</label>
-                <textarea id="templateSource" placeholder="Paste template here, or upload DOCX/HTML/TXT. Example: Payment request for {{task_title}} on {{task_date}}. Total: {{total_payable}}"></textarea>
+              <div class="span-2" id="templateEditorWrap">
+                <label>Template editor</label>
+                <div class="visual-template-wrap">
+                  <div class="visual-template-toolbar">
+                    <div class="small muted">Visual editor is the default. Use Source only if you need to fix HTML.</div>
+                    <div class="btn-row">
+                      <button type="button" class="secondary" id="visualModeBtn">Visual</button>
+                      <button type="button" class="secondary" id="sourceModeBtn">Source</button>
+                    </div>
+                  </div>
+                  <div id="templateVisualEditor" class="visual-template-editor" contenteditable="true" aria-label="Visual template editor"></div>
+                  <textarea id="templateSource" class="source-editor-hidden" placeholder="Paste template here, or upload DOCX/HTML/TXT. Example: Payment request for {{task_title}} on {{task_date}}. Total: {{total_payable}}"></textarea>
+                </div>
+                <div class="field-note">Tip: click inside the document and use Insert placeholder. The saved template keeps the editable document HTML.</div>
               </div>
             </div>
             <div class="btn-row" style="margin-top:12px">
@@ -1019,6 +1078,51 @@ Kind regards,
               <button class="secondary" id="importJsonBtn">Import sync JSON</button>
             </div>
             <p class="muted small">Merge keeps the newest version of each task using its updated timestamp. If you deleted a task on one device and want the deletion reflected everywhere, use Replace from the device that has the correct final list.</p>
+            <h3 style="margin-top:22px">Cloud master JSON sync beta</h3>
+            <div class="notice">
+              Optional v16 feature for one user across phone and laptop. Host the app on GitHub Pages, then use a small Google Apps Script bridge to read/write one master JSON file in your Google Drive. Keep manual JSON backup as a safety fallback.
+            </div>
+            <div class="form-grid" style="margin-top:10px">
+              <div class="span-2">
+                <label for="cloudSyncUrl">Google Apps Script Web App URL</label>
+                <input id="cloudSyncUrl" placeholder="https://script.google.com/macros/s/.../exec" />
+              </div>
+              <div>
+                <label for="cloudSyncKey">Sync key/passphrase</label>
+                <input id="cloudSyncKey" type="password" placeholder="Same key as Apps Script" />
+              </div>
+              <div>
+                <label for="cloudSyncImportSettings">Profile/setup on cloud pull</label>
+                <select id="cloudSyncImportSettings">
+                  <option value="keep">Keep this device setup</option>
+                  <option value="import">Import setup from cloud JSON</option>
+                </select>
+              </div>
+              <div>
+                <label for="cloudSyncAutoPull">When app opens</label>
+                <select id="cloudSyncAutoPull">
+                  <option value="yes">Pull latest cloud JSON</option>
+                  <option value="no">Manual sync only</option>
+                </select>
+              </div>
+              <div>
+                <label for="cloudSyncAutoPush">After changes</label>
+                <select id="cloudSyncAutoPush">
+                  <option value="yes">Push changes to cloud</option>
+                  <option value="no">Manual push only</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row" style="margin-top:10px">
+              <button class="secondary" id="saveCloudSyncBtn">Save cloud setup</button>
+              <button class="secondary" id="pullCloudSyncBtn">Pull from cloud</button>
+              <button class="secondary" id="pushCloudSyncBtn">Push to cloud</button>
+              <button class="danger" id="disableCloudSyncBtn">Disable cloud sync</button>
+            </div>
+            <div id="cloudSyncStatus" class="cloud-status small"><span class="cloud-dot"></span><span>Cloud sync is not configured.</span></div>
+            <div class="library-note">
+              v16 uses a free Apps Script bridge. Because this is a single master JSON, it is best for your own phone/laptop sync, not multiple separate users. If both devices edit while offline, newest task-level updates are merged, but you should still keep JSON backups.
+            </div>
           </div>
           <div class="card">
             <h2>Export preview</h2>
@@ -1193,6 +1297,9 @@ Kind regards,
     let selectedRequestTaskId = null;
     let suggestionData = {};
     let activeSuggestInput = null;
+    let suppressCloudPush = false;
+    let cloudPushTimer = null;
+    let cloudSyncBusy = false;
     const suggestionFieldIds = ["jobTitle", "taskTitle", "clientName", "contactName", "clientEmail", "clientPhone", "location", "paymentTerms", "referenceNo"];
 
     function loadTasks(){
@@ -1202,6 +1309,7 @@ Kind regards,
     function saveTasks(){
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
       renderAll();
+      scheduleCloudPush("tasks");
     }
     function loadTemplates(){
       try { return JSON.parse(localStorage.getItem(TEMPLATES_KEY) || "[]"); }
@@ -1210,13 +1318,17 @@ Kind regards,
     function saveTemplates(){
       localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
       renderAll();
+      scheduleCloudPush("templates");
     }
     function loadSettings(){
       const defaults = {defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14"};
       try { return {...defaults, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")}; }
       catch(e){ return defaults; }
     }
-    function saveSettings(){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+    function saveSettings(){
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      scheduleCloudPush("settings");
+    }
     function showToast(message){
       const toast = $("toast");
       toast.textContent = message;
@@ -2332,7 +2444,7 @@ Request number: ${requestNumber(task)}`;
         address_line1: settings.addressLine1 || "",
         address_line2: settings.addressLine2 || "",
         address_line3: settings.addressLine3 || "",
-        town: settings.town || "",
+        town: settings.addressTown || settings.town || "",
         postcode: settings.postCode || "",
         home_postcode: settings.postCode || "",
         bank_account_name: settings.accountName || profileFullName(),
@@ -2398,7 +2510,7 @@ Request number: ${requestNumber(task)}`;
       currentTemplateKind = $("templateKind")?.value || "htmlTemplate";
       const isPdf = currentTemplateKind === "pdfOverlay";
       $("pdfBuilder")?.classList.toggle("hidden", !isPdf);
-      $("templateSource")?.closest("div")?.classList.toggle("hidden", isPdf);
+      $("templateEditorWrap")?.classList.toggle("hidden", isPdf);
       $("analyseTemplateBtn")?.classList.toggle("hidden", isPdf);
       $("insertPlaceholderBtn")?.classList.toggle("hidden", isPdf);
       $("insertPlaceholderField")?.closest("div")?.classList.toggle("hidden", isPdf);
@@ -2409,16 +2521,77 @@ Request number: ${requestNumber(task)}`;
       if(!sel) return;
       sel.innerHTML = TEMPLATE_FIELD_OPTIONS.filter(([v]) => v && v !== "fixed_text" && v !== "ask_each_time").map(([value,label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("");
     }
+    function templateEditorIsVisual(){ return !$("templateVisualEditor")?.classList.contains("source-editor-hidden"); }
+    function syncVisualToSource(){
+      const visual = $("templateVisualEditor"), source = $("templateSource");
+      if(visual && source && templateEditorIsVisual()) source.value = visual.innerHTML;
+    }
+    function syncSourceToVisual(){
+      const visual = $("templateVisualEditor"), source = $("templateSource");
+      if(!visual || !source) return;
+      const raw = source.value || "";
+      visual.innerHTML = templateLooksHtml(raw) ? sanitiseTemplateHtml(raw) : templateTextToHtml(raw);
+    }
+    function setTemplateRaw(raw){
+      const source = $("templateSource");
+      if(source) source.value = raw || "";
+      syncSourceToVisual();
+    }
+    function getTemplateRaw(){
+      syncVisualToSource();
+      return $("templateSource")?.value || "";
+    }
+    function setTemplateEditorMode(mode){
+      const visual = $("templateVisualEditor"), source = $("templateSource");
+      if(!visual || !source) return;
+      if(mode === "source"){
+        syncVisualToSource();
+        visual.classList.add("source-editor-hidden");
+        source.classList.remove("source-editor-hidden");
+        source.focus();
+      } else {
+        syncSourceToVisual();
+        source.classList.add("source-editor-hidden");
+        visual.classList.remove("source-editor-hidden");
+        visual.focus();
+      }
+    }
+    function insertTextIntoVisualEditor(text){
+      const visual = $("templateVisualEditor");
+      if(!visual) return false;
+      visual.focus();
+      const sel = window.getSelection();
+      if(sel && sel.rangeCount){
+        const range = sel.getRangeAt(0);
+        if(visual.contains(range.commonAncestorContainer)){
+          range.deleteContents();
+          const node = document.createTextNode(text);
+          range.insertNode(node);
+          range.setStartAfter(node);
+          range.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          return true;
+        }
+      }
+      visual.append(document.createTextNode(text));
+      return true;
+    }
     function insertPlaceholderAtCursor(){
       const field = $("insertPlaceholderField")?.value;
-      const area = $("templateSource");
-      if(!field || !area) return;
+      if(!field) return;
       const token = `{{${field}}}`;
-      const start = area.selectionStart || 0;
-      const end = area.selectionEnd || 0;
-      area.value = area.value.slice(0,start) + token + area.value.slice(end);
-      area.focus();
-      area.selectionStart = area.selectionEnd = start + token.length;
+      const area = $("templateSource");
+      if(templateEditorIsVisual()){
+        insertTextIntoVisualEditor(token);
+        syncVisualToSource();
+      } else if(area){
+        const start = area.selectionStart || 0;
+        const end = area.selectionEnd || 0;
+        area.value = area.value.slice(0,start) + token + area.value.slice(end);
+        area.focus();
+        area.selectionStart = area.selectionEnd = start + token.length;
+      }
       analyseTemplateFromForm(currentTemplateMapping());
     }
     function pdfFieldValue(field, task){
@@ -2557,7 +2730,7 @@ Request number: ${requestNumber(task)}`;
       renderPdfFieldList();
     }
     function analyseTemplateFromForm(existingMap = {}){
-      const raw = $("templateSource").value;
+      const raw = getTemplateRaw();
       const placeholders = detectPlaceholders(raw);
       renderPlaceholderMapping(placeholders, existingMap);
       $("templatePreviewBox").innerHTML = placeholders.length ? `<div class="small muted">Detected ${placeholders.length} placeholder(s):</div><div style="margin-top:8px">${placeholders.map(p => `<span class="badge mono">${escapeHtml(p.raw)}</span>`).join(" ")}</div>` : `<div class="empty">No placeholders detected yet.</div>`;
@@ -2569,7 +2742,7 @@ Request number: ${requestNumber(task)}`;
       pdfTemplateState = { fileName:"", base64:"", bytes:null, doc:null, pageCount:0, page:1, fields:[], selected:null, canvasWidth:0, canvasHeight:0 };
       $("templateName").value = "";
       $("templateFile").value = "";
-      $("templateSource").value = "";
+      setTemplateRaw("");
       $("templateKind").value = "htmlTemplate";
       updateTemplateModeUi();
       $("placeholderMapping").innerHTML = `<div class="empty">Upload, paste, or insert placeholders, then analyse the template.</div>`;
@@ -2605,7 +2778,7 @@ Request number: ${requestNumber(task)}`;
           raw:""
         };
       } else {
-        const raw = $("templateSource").value;
+        const raw = getTemplateRaw();
         if(!raw.trim()){ showToast("Upload or paste a template first"); return; }
         const placeholders = currentTemplatePlaceholders.length ? currentTemplatePlaceholders : analyseTemplateFromForm();
         if(!placeholders.length){
@@ -2645,7 +2818,7 @@ Request number: ${requestNumber(task)}`;
       if(tpl.kind === "pdfOverlay"){
         $("templateKind").value = "pdfOverlay";
         updateTemplateModeUi();
-        $("templateSource").value = "";
+        setTemplateRaw("");
         currentTemplatePlaceholders = [];
         pdfTemplateState = { fileName:tpl.pdfFileName || "template.pdf", base64:tpl.pdfBase64 || "", bytes:null, doc:null, pageCount:0, page:1, fields:JSON.parse(JSON.stringify(tpl.pdfFields || [])), selected:null, canvasWidth:0, canvasHeight:0 };
         $("placeholderMapping").innerHTML = `<div class="empty">This is a PDF overlay template. Edit fields in the PDF builder below.</div>`;
@@ -2654,7 +2827,7 @@ Request number: ${requestNumber(task)}`;
       } else {
         $("templateKind").value = "htmlTemplate";
         updateTemplateModeUi();
-        $("templateSource").value = tpl.raw || "";
+        setTemplateRaw(tpl.raw || "");
         renderPlaceholderMapping(tpl.placeholders || detectPlaceholders(tpl.raw || ""), tpl.mapping || {});
         $("templatePreviewBox").innerHTML = `<div class="small muted">Editing saved template.</div><div style="margin-top:8px">${(tpl.placeholders || []).map(p => `<span class="badge mono">${escapeHtml(p.raw)}</span>`).join(" ") || "No placeholders"}</div>`;
       }
@@ -2689,6 +2862,11 @@ Request number: ${requestNumber(task)}`;
     if($("templateFile")){
       populateInsertPlaceholderOptions();
       updateTemplateModeUi();
+      syncSourceToVisual();
+      $("visualModeBtn")?.addEventListener("click", () => setTemplateEditorMode("visual"));
+      $("sourceModeBtn")?.addEventListener("click", () => setTemplateEditorMode("source"));
+      $("templateVisualEditor")?.addEventListener("input", () => { syncVisualToSource(); });
+      $("templateSource")?.addEventListener("input", () => { if(!templateEditorIsVisual()) syncSourceToVisual(); });
       $("templateKind").addEventListener("change", updateTemplateModeUi);
       $("insertPlaceholderBtn").addEventListener("click", insertPlaceholderAtCursor);
       $("templateFile").addEventListener("change", async () => {
@@ -2700,7 +2878,7 @@ Request number: ${requestNumber(task)}`;
         if(isPdf){
           $("templateKind").value = "pdfOverlay";
           updateTemplateModeUi();
-          $("templateSource").value = "";
+          setTemplateRaw("");
           currentTemplatePlaceholders = [];
           $("placeholderMapping").innerHTML = `<div class="empty">PDF selected: ${escapeHtml(file.name)}. Use the PDF overlay builder below to place fill boxes and map them to app fields.</div>`;
           await loadPdfForTemplate(file, []);
@@ -2714,7 +2892,7 @@ Request number: ${requestNumber(task)}`;
           try{
             const arrayBuffer = await file.arrayBuffer();
             const result = await window.mammoth.convertToHtml({arrayBuffer});
-            $("templateSource").value = result.value || "";
+            setTemplateRaw(result.value || "");
             analyseTemplateFromForm();
             $("templatePreviewBox").innerHTML = `<div class="editable-template-preview">${sanitiseTemplateHtml(result.value || "")}</div><div class="field-note">DOCX was converted to editable HTML. Please check formatting and add/move placeholders before saving.</div>`;
             showToast("Word template converted for review");
@@ -2722,7 +2900,7 @@ Request number: ${requestNumber(task)}`;
           return;
         }
         try{
-          $("templateSource").value = await file.text();
+          setTemplateRaw(await file.text());
           analyseTemplateFromForm();
           showToast("Template loaded for review");
         }catch(e){ showToast("Could not read this template file. Try saving it as HTML or TXT first."); }
@@ -2809,13 +2987,24 @@ Request number: ${requestNumber(task)}`;
       };
     }
     function syncPayload(){
+      const settingsForSync = JSON.parse(JSON.stringify(settings || {}));
+      if(settingsForSync.cloudSync){
+        settingsForSync.cloudSync = {
+          enabled:false,
+          url: settingsForSync.cloudSync.url || "",
+          autoPull: settingsForSync.cloudSync.autoPull !== false,
+          autoPush: settingsForSync.cloudSync.autoPush !== false,
+          importSettings: settingsForSync.cloudSync.importSettings || "keep",
+          note:"Sync key is intentionally not exported."
+        };
+      }
       return {
         app:"Task Payment Tracker",
-        version:"1.6",
+        version:"1.16",
         syncFormat:"complete-device-sync-json",
         exportedAt:new Date().toISOString(),
         tasks: tasks.map(normaliseTaskForSync),
-        settings,
+        settings: settingsForSync,
         templates
       };
     }
@@ -3047,6 +3236,162 @@ Request number: ${requestNumber(task)}`;
       }
     }
 
+
+    function cloudConfig(){
+      return settings.cloudSync || {};
+    }
+    function cloudConfigured(){
+      const c = cloudConfig();
+      return !!(c.enabled && c.url && c.key);
+    }
+    function updateCloudSyncUi(){
+      const c = cloudConfig();
+      if($('cloudSyncUrl')) $('cloudSyncUrl').value = c.url || '';
+      if($('cloudSyncKey')) $('cloudSyncKey').value = c.key || '';
+      if($('cloudSyncImportSettings')) $('cloudSyncImportSettings').value = c.importSettings || 'keep';
+      if($('cloudSyncAutoPull')) $('cloudSyncAutoPull').value = c.autoPull === false ? 'no' : 'yes';
+      if($('cloudSyncAutoPush')) $('cloudSyncAutoPush').value = c.autoPush === false ? 'no' : 'yes';
+      setCloudStatus(cloudConfigured() ? 'Cloud sync configured.' : 'Cloud sync is not configured.', cloudConfigured() ? 'ok' : '');
+    }
+    function setCloudStatus(message, state=''){
+      const box = $('cloudSyncStatus');
+      if(!box) return;
+      const dotClass = state === 'ok' ? 'ok' : state === 'warn' ? 'warn' : state === 'bad' ? 'bad' : '';
+      const c = cloudConfig();
+      const detail = [];
+      if(c.lastPulled) detail.push(`last pulled ${new Date(c.lastPulled).toLocaleString()}`);
+      if(c.lastPushed) detail.push(`last pushed ${new Date(c.lastPushed).toLocaleString()}`);
+      box.innerHTML = `<span class="cloud-dot ${dotClass}"></span><span>${escapeHtml(message)}${detail.length ? ' · ' + escapeHtml(detail.join(' · ')) : ''}</span>`;
+    }
+    function saveCloudSyncFromForm(){
+      const url = ($('cloudSyncUrl')?.value || '').trim();
+      const key = ($('cloudSyncKey')?.value || '').trim();
+      if(!url || !key){ showToast('Add Apps Script URL and sync key'); return; }
+      settings.cloudSync = {
+        ...(settings.cloudSync || {}),
+        enabled:true,
+        url,
+        key,
+        importSettings:$('cloudSyncImportSettings')?.value || 'keep',
+        autoPull:($('cloudSyncAutoPull')?.value || 'yes') === 'yes',
+        autoPush:($('cloudSyncAutoPush')?.value || 'yes') === 'yes'
+      };
+      saveSettings();
+      updateCloudSyncUi();
+      showToast('Cloud sync setup saved');
+    }
+    function disableCloudSync(){
+      if(!confirm('Disable cloud sync on this device? Local app data will remain.')) return;
+      settings.cloudSync = {enabled:false};
+      saveSettings();
+      updateCloudSyncUi();
+      showToast('Cloud sync disabled');
+    }
+    function cloudUrlWithParams(params){
+      const c = cloudConfig();
+      const url = new URL(c.url);
+      Object.entries(params || {}).forEach(([k,v]) => url.searchParams.set(k, v));
+      url.searchParams.set('_', String(Date.now()));
+      return url.toString();
+    }
+    function jsonpRequest(url){
+      return new Promise((resolve, reject) => {
+        const cb = 'tptCloud_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7);
+        const sep = url.includes('?') ? '&' : '?';
+        const script = document.createElement('script');
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error('Cloud sync timed out'));
+        }, 18000);
+        function cleanup(){
+          clearTimeout(timer);
+          script.remove();
+          try{ delete window[cb]; }catch(e){ window[cb] = undefined; }
+        }
+        window[cb] = data => { cleanup(); resolve(data); };
+        script.src = `${url}${sep}callback=${encodeURIComponent(cb)}`;
+        script.onerror = () => { cleanup(); reject(new Error('Cloud sync could not load')); };
+        document.body.appendChild(script);
+      });
+    }
+    function importCloudPayload(data, options = {}){
+      const importedTasks = Array.isArray(data) ? data : data?.tasks;
+      if(!Array.isArray(importedTasks)) throw new Error('No task list found in cloud JSON');
+      suppressCloudPush = true;
+      const result = mergeImportedTasks(importedTasks);
+      if((options.importSettings || cloudConfig().importSettings) === 'import' && data.settings){
+        const existingCloud = settings.cloudSync || {};
+        settings = {...{defaultCurrency:'GBP', mileageRate:'0.45', dueDays:'14'}, ...data.settings, cloudSync: existingCloud};
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      }
+      if(Array.isArray(data.templates)){
+        templates = mergeTemplates(data.templates);
+        localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      suppressCloudPush = false;
+      renderAll();
+      return result;
+    }
+    async function pullCloudSync(showMessage = true){
+      if(!cloudConfigured()){ if(showMessage) showToast('Cloud sync is not configured'); return; }
+      if(cloudSyncBusy){ if(showMessage) showToast('Cloud sync already running'); return; }
+      cloudSyncBusy = true;
+      setCloudStatus('Pulling latest master JSON from cloud...', 'warn');
+      try{
+        const c = cloudConfig();
+        const url = cloudUrlWithParams({action:'pull', key:c.key});
+        const response = await jsonpRequest(url);
+        if(!response || response.ok === false) throw new Error(response?.error || 'Cloud pull failed');
+        const payload = response.payload || response.data || response;
+        const result = importCloudPayload(payload, {importSettings:c.importSettings || 'keep'});
+        settings.cloudSync = {...cloudConfig(), lastPulled:new Date().toISOString()};
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        updateCloudSyncUi();
+        if(showMessage) showToast(`Cloud pull complete: ${result.added} added, ${result.updated} updated`);
+      }catch(e){
+        setCloudStatus(e.message || 'Cloud pull failed', 'bad');
+        if(showMessage) showToast('Cloud pull failed. Check Apps Script URL/key.');
+      }finally{ cloudSyncBusy = false; }
+    }
+    async function pushCloudSync(showMessage = true){
+      if(!cloudConfigured()){ if(showMessage) showToast('Cloud sync is not configured'); return; }
+      if(cloudSyncBusy){ if(showMessage) showToast('Cloud sync already running'); return; }
+      cloudSyncBusy = true;
+      setCloudStatus('Sending master JSON to cloud...', 'warn');
+      try{
+        const c = cloudConfig();
+        const payload = syncPayload();
+        const body = JSON.stringify({action:'push', key:c.key, payload});
+        const form = new FormData();
+        form.append('action', 'push');
+        form.append('key', c.key);
+        form.append('payload', JSON.stringify(payload));
+        await fetch(c.url, {method:'POST', mode:'no-cors', body:form});
+        settings.cloudSync = {...cloudConfig(), lastPushed:new Date().toISOString()};
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+        setCloudStatus('Cloud push sent. Use Pull to confirm from the same master JSON if needed.', 'ok');
+        if(showMessage) showToast('Cloud push sent');
+      }catch(e){
+        setCloudStatus('Cloud push failed', 'bad');
+        if(showMessage) showToast('Cloud push failed');
+      }finally{ cloudSyncBusy = false; }
+    }
+    function scheduleCloudPush(reason){
+      if(suppressCloudPush) return;
+      const c = cloudConfig();
+      if(!c.enabled || !c.autoPush || !c.url || !c.key) return;
+      clearTimeout(cloudPushTimer);
+      cloudPushTimer = setTimeout(() => pushCloudSync(false), 1200);
+    }
+    function setupCloudSyncControls(){
+      updateCloudSyncUi();
+      $('saveCloudSyncBtn')?.addEventListener('click', saveCloudSyncFromForm);
+      $('pullCloudSyncBtn')?.addEventListener('click', () => pullCloudSync(true));
+      $('pushCloudSyncBtn')?.addEventListener('click', () => pushCloudSync(true));
+      $('disableCloudSyncBtn')?.addEventListener('click', disableCloudSync);
+    }
+
     function buildLaunchAlerts(){
       const active = tasks.filter(t => t.taskStatus !== "cancelled" && t.paymentStatus !== "paid");
       const dueToday = active.filter(isDueToday).sort((a,b)=>(a.startTime||"").localeCompare(b.startTime||""));
@@ -3115,13 +3460,16 @@ Request number: ${requestNumber(task)}`;
       renderRequestOptions();
       renderTemplateManager();
       renderExportPreview();
+      updateCloudSyncUi();
     }
 
     setupCustomSuggestions();
+    setupCloudSyncControls();
     resetForm();
     updateTravelPreview();
     renderAll();
-    setTimeout(maybeShowLaunchAlerts, 350);
+    setTimeout(() => { if(cloudConfigured() && cloudConfig().autoPull !== false) pullCloudSync(false); }, 450);
+    setTimeout(maybeShowLaunchAlerts, 900);
   </script>
 
   <script>

@@ -1,0 +1,33 @@
+Task Payment Tracker v16 - Google Drive master JSON sync setup
+
+This is optional. Use it only if you want one master JSON to sync between phone and laptop.
+
+1. Go to https://script.google.com/ while signed in to the Google account that should own the master JSON.
+2. Create a new Apps Script project.
+3. Replace the default Code.gs with the contents of google_drive_sync_apps_script.gs.
+4. Change this line:
+
+   const SYNC_KEY = 'CHANGE_THIS_TO_A_PRIVATE_SYNC_KEY';
+
+   Use a private passphrase. You will enter the same passphrase inside the app.
+
+5. Click Save.
+6. Click Deploy > New deployment.
+7. Choose type: Web app.
+8. Set:
+   - Execute as: Me
+   - Who has access: Anyone with the link
+9. Click Deploy and approve permissions.
+10. Copy the Web App URL.
+11. Open your GitHub-hosted Task Payment Tracker.
+12. Go to Export > Cloud master JSON sync beta.
+13. Paste the Web App URL and the same Sync Key.
+14. Click Save cloud setup.
+15. On the device with the correct data, click Push to cloud.
+16. On the other device, click Pull from cloud.
+
+Important notes:
+- This is designed for one user across their own devices.
+- Keep manual JSON backups while testing.
+- If two devices are edited offline, task-level updated timestamps are merged, but conflicts are still possible.
+- The cloud JSON may include setup/bank details if those are saved in the app. Use a trusted Google account and private sync key.
