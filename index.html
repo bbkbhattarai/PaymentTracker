@@ -547,6 +547,19 @@
     .payment-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
     .payment-action-grid label{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:12px;padding:9px;background:#fff;margin:0;font-weight:700;font-size:.86rem}
 
+
+    .copy-assist-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 14px}
+    .copy-assist-summary .mini-stat{padding:10px;background:#fbf9ff}
+    .copy-assist-section{border:1px solid var(--line);border-radius:16px;background:#fff;margin:12px 0;overflow:hidden}
+    .copy-assist-section h3{margin:0;padding:10px 12px;background:#fbf9ff;border-bottom:1px solid var(--line);font-size:1rem}
+    .copy-row{display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px dashed var(--line)}
+    .copy-row:first-of-type{border-top:0}
+    .copy-row .copy-label{font-weight:800;color:#493f5e;font-size:.88rem}
+    .copy-row .copy-value{white-space:pre-wrap;word-break:break-word;color:var(--text);font-size:.9rem}
+    .copy-row button{padding:7px 9px;min-height:32px;font-size:.82rem}
+    .copy-assist-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+    .copy-assist-actions button{min-height:34px;padding:8px 10px;font-size:.85rem}
+
     .settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
     .modal-backdrop{
       position:fixed;
@@ -655,7 +668,7 @@
       .task-top .btn-row{margin-top:8px}
       .task-item .btn-row button{flex:1 1 140px}
       th,td{font-size:.84rem;padding:8px}
-      .stats-toolbar,.stats-kpis,.smart-fill-panel .smart-grid,.payment-action-grid{grid-template-columns:1fr}
+      .stats-toolbar,.stats-kpis,.smart-fill-panel .smart-grid,.payment-action-grid,.copy-assist-summary,.copy-row{grid-template-columns:1fr}
     }
     @media print{
       body{background:#fff}
@@ -895,7 +908,7 @@ match_number = 12345"></textarea>
             <h3>Task calendar entry</h3>
             <p class="muted">The calendar button downloads an .ics file for the task only. Payment follow-up is handled inside the dashboard, not in your calendar.</p>
             <h3>Email/payment flow</h3>
-            <p class="muted">After completion, generate a payment request, then choose the general format, Club Academy Scotland form, or a saved template. v18 can address drafts to multiple saved recipients, open saved form/payment links, and use flexible request actions. Use Share file, Download, Print/Save PDF, Copy email body, Email draft, external form, or the optional .eml package.</p>
+            <p class="muted">After completion, generate a payment request, then choose the general format, Club Academy Scotland form, or a saved template. v19 can address drafts to multiple saved recipients, open saved form/payment links, and use flexible request actions. Use Share file, Download, Print/Save PDF, Copy email body, Email draft, external form, or the optional .eml package.</p>
           </div>
         </div>
       </section>
@@ -981,10 +994,10 @@ Kind regards,
               <button class="gold" id="emailRequestBtn">Email draft</button>
               <button class="secondary" id="downloadEmlBtn">Download .eml</button>
               <button class="success" id="markRequestedBtn">Mark requested</button>
-              <button class="secondary" id="openPaymentLinkBtn">Open form/link</button>
+              <button class="secondary" id="openPaymentLinkBtn">Form assist</button>
             </div>
             <div id="emailFlowNote" class="notice request-helper small" style="margin-top:12px"></div>
-            <p class="muted small">Browser email drafts cannot reliably attach generated files. v18 improves the PDF/print output, but attaching still depends on the email app. Best flow: Share file first on iPhone, or open the clean print/PDF file and attach manually. The .eml option is experimental for Mac/desktop testing.</p>
+            <p class="muted small">Browser email drafts cannot reliably attach generated files. v19 keeps the improved PDF/print output, but attaching still depends on the email app. Best flow: Share file first on iPhone, or open the clean print/PDF file and attach manually. The .eml option is experimental for Mac/desktop testing.</p>
           </div>
           <div class="card">
             <div id="requestPreview" class="request-preview"></div>
@@ -998,7 +1011,7 @@ Kind regards,
           <div class="card">
             <h2>Template Builder</h2>
             <div class="notice">
-              v18 improves PDF output and email handling. HTML/Word-style requests now open in a clean print-only window for Save as PDF, PDF overlay fields are easier to position, and tasks can store multiple named email recipients for payment drafts.
+              v19 improves PDF output, email handling and form assist. HTML/Word-style requests now open in a clean print-only window for Save as PDF, PDF overlay fields are easier to position, and tasks can store multiple named email recipients for payment drafts.
             </div>
             <div class="library-note">
               First use needs internet access for the free browser libraries used for DOCX/PDF processing. Saved templates stay in your app data and can be backed up by JSON or synced through the Google Drive bridge if configured.
@@ -1225,7 +1238,7 @@ Kind regards,
             <p class="muted small">Merge keeps the newest version of each task using its updated timestamp. If you deleted a task on one device and want the deletion reflected everywhere, use Replace from the device that has the correct final list.</p>
             <h3 style="margin-top:22px">Cloud master JSON sync beta</h3>
             <div class="notice">
-              Optional v16/v18 feature for one user across phone and laptop. Host the app on GitHub Pages, then use a small Google Apps Script bridge to read/write one master JSON file in your Google Drive. Keep manual JSON backup as a safety fallback.
+              Optional v16/v19 feature for one user across phone and laptop. Host the app on GitHub Pages, then use a small Google Apps Script bridge to read/write one master JSON file in your Google Drive. Keep manual JSON backup as a safety fallback.
             </div>
             <div class="form-grid" style="margin-top:10px">
               <div class="span-2">
@@ -1266,7 +1279,7 @@ Kind regards,
             </div>
             <div id="cloudSyncStatus" class="cloud-status small"><span class="cloud-dot"></span><span>Cloud sync is not configured.</span></div>
             <div class="library-note">
-              v18 keeps the free Apps Script bridge for one-user phone/laptop sync. It is best for your own devices, not for multiple separate users. Keep JSON backups while testing.
+              v19 keeps the free Apps Script bridge for one-user phone/laptop sync. It is best for your own devices, not for multiple separate users. Keep JSON backups while testing.
             </div>
           </div>
           <div class="card">
@@ -1304,6 +1317,26 @@ Kind regards,
         <button id="viewLaunchAlertItemsBtn" type="button">View on dashboard</button>
         <button class="secondary" id="dismissLaunchAlertBtn" type="button">Close</button>
       </div>
+    </div>
+  </div>
+
+
+  <div id="formAssistBackdrop" class="modal-backdrop hidden" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="formAssistTitle">
+      <div class="modal-head">
+        <div>
+          <h2 id="formAssistTitle">Form/payment assist</h2>
+          <p class="muted" style="margin:4px 0 0">Use these copy-ready details when an organisation form cannot be prefilled automatically.</p>
+        </div>
+        <button class="secondary" id="closeFormAssistBtn" type="button">Close</button>
+      </div>
+      <div id="formAssistContent"></div>
+      <div class="btn-row" style="margin-top:14px">
+        <button id="openFormAssistLinkBtn" type="button">Open form/link</button>
+        <button class="success" id="markFormAssistRequestedBtn" type="button">Mark requested</button>
+        <button class="secondary" id="closeFormAssistBottomBtn" type="button">Close</button>
+      </div>
+      <p class="muted small" style="margin-top:10px">Opening a form/link no longer marks payment as requested automatically. Use Mark requested after you have submitted the form or sent the request.</p>
     </div>
   </div>
 
@@ -1445,6 +1478,9 @@ Kind regards,
     let currentTemplateKind = "htmlTemplate";
     let pdfTemplateState = { fileName:"", base64:"", bytes:null, doc:null, pageCount:0, page:1, fields:[], selected:null, canvasWidth:0, canvasHeight:0 };
     let selectedRequestTaskId = null;
+    let activeFormAssistTaskId = null;
+    let formAssistCopyValues = [];
+    let formAssistSectionValues = {};
     let suggestionData = {};
     let activeSuggestInput = null;
     let suppressCloudPush = false;
@@ -1882,7 +1918,7 @@ Kind regards,
       if(t.paymentStatus === "paid"){
         return `${viewButton}${calendarButton}`;
       }
-      const formButton = t.paymentLink ? `<button class="secondary" onclick="openPaymentLinkFor('${t.id}')">Open form</button>` : "";
+      const formButton = t.paymentLink ? `<button class="secondary" onclick="openPaymentLinkFor('${t.id}')">Form assist</button>` : "";
       const rescheduleButton = t.taskStatus !== "cancelled" ? `<button class="secondary" onclick="rescheduleTask('${t.id}')">Reschedule</button>` : "";
       if(isPastIncomplete(t)){
         return `<button class="success action-primary" onclick="markCompleted('${t.id}')">Mark completed</button>${rescheduleButton}${calendarButton}${viewButton}${cancelButton}`;
@@ -2129,22 +2165,137 @@ Kind regards,
       });
       return link;
     }
+    function formAssistRow(label, value, section){
+      const text = String(value ?? "").trim();
+      if(!text) return "";
+      const index = formAssistCopyValues.push({label, value:text, section}) - 1;
+      if(!formAssistSectionValues[section]) formAssistSectionValues[section] = [];
+      formAssistSectionValues[section].push(`${label}: ${text}`);
+      return `<div class="copy-row"><div class="copy-label">${escapeHtml(label)}</div><div class="copy-value">${escapeHtml(text)}</div><button type="button" class="secondary copy-assist-btn" data-copy-index="${index}">Copy</button></div>`;
+    }
+    function formAssistSection(title, rows){
+      const body = rows.filter(Boolean).join("");
+      if(!body) return "";
+      return `<div class="copy-assist-section"><h3>${escapeHtml(title)}</h3>${body}</div>`;
+    }
+    function formAssistBundleText(section){
+      if(section === "all"){
+        return Object.entries(formAssistSectionValues).map(([name, lines]) => `${name.charAt(0).toUpperCase()+name.slice(1)} details:\n${lines.join("\n")}`).join("\n\n");
+      }
+      return (formAssistSectionValues[section] || []).join("\n");
+    }
+    async function copyAssistValue(index){
+      const item = formAssistCopyValues[Number(index)];
+      if(!item) return;
+      try{ await copyText(item.value); showToast(`${item.label} copied`); }
+      catch(e){ showToast("Could not copy"); }
+    }
+    async function copyAssistBundle(section){
+      const text = formAssistBundleText(section);
+      if(!text){ showToast("Nothing to copy"); return; }
+      try{ await copyText(text); showToast(section === "all" ? "All assist details copied" : `${section.charAt(0).toUpperCase()+section.slice(1)} details copied`); }
+      catch(e){ showToast("Could not copy"); }
+    }
+    function renderFormAssist(task){
+      formAssistCopyValues = [];
+      formAssistSectionValues = {};
+      const values = templateValues(task);
+      const custom = parseCustomFields(task.customFields);
+      const customRows = Object.entries(custom).map(([k,v]) => formAssistRow(k, v, "custom"));
+      const taskRows = [
+        formAssistRow("Task/event", task.taskTitle || values.task_title, "task"),
+        formAssistRow("Job/role", task.jobTitle || values.job_title, "task"),
+        formAssistRow("Date/time", fmtDateTime(task.taskDate, task.startTime, task.endTime), "task"),
+        formAssistRow("Client/company", task.clientName, "task"),
+        formAssistRow("Contact", task.contactName, "task"),
+        formAssistRow("Location", task.location, "task"),
+        formAssistRow("Reference", task.referenceNo || requestNumber(task), "task"),
+        formAssistRow("Notes", task.notes, "task")
+      ];
+      const paymentRows = [
+        formAssistRow("Agreed payment", money(task.feeAmount, task.currency), "payment"),
+        formAssistRow("Travel miles", task.claimTravel === "yes" ? (task.travelMiles || "0") : "", "payment"),
+        formAssistRow("Mileage rate", task.claimTravel === "yes" ? money(task.travelRate || settings.mileageRate || 0, task.currency) : "", "payment"),
+        formAssistRow("Travel amount", task.claimTravel === "yes" ? money(travelAmount(task), task.currency) : "", "payment"),
+        formAssistRow("Total payable", money(totalAmount(task), task.currency), "payment"),
+        formAssistRow("Completed date", fmtDate(task.completedDate || task.taskDate), "payment"),
+        formAssistRow("Due date", fmtDate(dueDateFrom(task)), "payment")
+      ];
+      const bankRows = [
+        formAssistRow("Full name", profileFullName(), "bank"),
+        formAssistRow("Account name", settings.accountName || profileFullName(), "bank"),
+        formAssistRow("Bank name", settings.bankName, "bank"),
+        formAssistRow("Sort code", settings.sortCode, "bank"),
+        formAssistRow("Account number", settings.accountNumber, "bank"),
+        formAssistRow("Address", profileAddressText(), "bank"),
+        formAssistRow("Home postcode", settings.postCode, "bank")
+      ];
+      const recipientRows = [
+        formAssistRow("Recipient names", recipientNames(task), "recipients"),
+        formAssistRow("Recipient emails", recipientEmails(task), "recipients"),
+        formAssistRow("Primary email", task.clientEmail, "recipients"),
+        formAssistRow("Additional recipients", task.additionalRecipients, "recipients")
+      ];
+      const link = buildPaymentLink(task);
+      const linkRows = [
+        formAssistRow("Form/link", link || task.paymentLink, "link")
+      ];
+      const summary = `<div class="copy-assist-summary">
+        <div class="mini-stat"><div class="value">${money(totalAmount(task), task.currency)}</div><div class="label">Total payable</div></div>
+        <div class="mini-stat"><div class="value">${task.taskDate ? fmtDate(task.taskDate) : "No date"}</div><div class="label">Task date</div></div>
+        <div class="mini-stat"><div class="value">${task.paymentLink ? "Saved" : "None"}</div><div class="label">Form/link</div></div>
+      </div>`;
+      const quickActions = `<div class="copy-assist-actions">
+        <button type="button" class="secondary" onclick="copyAssistBundle('task')">Copy task</button>
+        <button type="button" class="secondary" onclick="copyAssistBundle('payment')">Copy payment</button>
+        <button type="button" class="secondary" onclick="copyAssistBundle('bank')">Copy bank</button>
+        <button type="button" class="secondary" onclick="copyAssistBundle('all')">Copy all</button>
+      </div>`;
+      const intro = `<div class="notice">Open the organisation form, then use these copy buttons to paste the exact task, payment and bank details. This is designed for forms that cannot be prefilled by the app.</div>`;
+      $("formAssistContent").innerHTML = intro + summary + quickActions +
+        formAssistSection("Task details", taskRows) +
+        formAssistSection("Payment details", paymentRows) +
+        formAssistSection("Bank details", bankRows) +
+        formAssistSection("Recipients", recipientRows) +
+        formAssistSection("Form/link", linkRows) +
+        formAssistSection("Custom fields", customRows);
+      $("openFormAssistLinkBtn").disabled = !task.paymentLink;
+    }
     window.openPaymentLinkFor = function(id){
       const t = tasks.find(x => x.id === id);
-      if(!t || !t.paymentLink){ showToast("No payment/form link saved for this task"); return; }
+      if(!t){ showToast("Task not found"); return; }
+      activeFormAssistTaskId = id;
+      renderFormAssist(t);
+      $("formAssistBackdrop").classList.remove("hidden");
+      $("formAssistBackdrop").setAttribute("aria-hidden", "false");
+    };
+    function closeFormAssist(){
+      $("formAssistBackdrop").classList.add("hidden");
+      $("formAssistBackdrop").setAttribute("aria-hidden", "true");
+    }
+    function openActiveFormAssistLink(){
+      const t = tasks.find(x => x.id === activeFormAssistTaskId);
+      if(!t || !t.paymentLink){ showToast("No form/link saved for this task"); return; }
       const url = buildPaymentLink(t);
       try{
         window.open(url, "_blank", "noopener");
         t.formOpenedAt = new Date().toISOString();
-        if(t.taskStatus === "completed" && t.paymentStatus === "not_requested"){
-          t.paymentStatus = "requested";
-          t.paymentRequestedDate = t.paymentRequestedDate || todayISO();
-        }
         t.updatedAt = new Date().toISOString();
         saveTasks();
-        showToast("Payment form/link opened and task marked requested");
-      }catch(e){ showToast("Could not open payment link"); }
-    };
+        showToast("Form/link opened. Mark requested after submitting.");
+      }catch(e){ showToast("Could not open form/link"); }
+    }
+    function markActiveFormAssistRequested(){
+      const t = tasks.find(x => x.id === activeFormAssistTaskId);
+      if(!t){ showToast("Task not found"); return; }
+      t.paymentStatus = "requested";
+      t.paymentRequestedDate = t.paymentRequestedDate || todayISO();
+      t.updatedAt = new Date().toISOString();
+      saveTasks();
+      closeFormAssist();
+      showToast("Marked as payment requested");
+    }
+    window.copyAssistBundle = copyAssistBundle;
 
     window.openPaymentFor = function(id){
       selectedRequestTaskId = id;
@@ -4013,8 +4164,8 @@ Request number: ${requestNumber(task)}`;
     }
     function alertTaskActions(t){
       if(isPastIncomplete(t)) return `<button type="button" class="success" onclick="markCompleted('${t.id}'); closeLaunchAlerts();">Mark completed</button><button type="button" class="secondary" onclick="rescheduleTask('${t.id}'); closeLaunchAlerts();">Reschedule</button><button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View</button>`;
-      if(needsPaymentRequest(t)) return `${t.paymentLink ? `<button type="button" class="secondary" onclick="openPaymentLinkFor('${t.id}'); closeLaunchAlerts();">Open form</button>` : ""}<button type="button" class="gold" onclick="openPaymentFor('${t.id}'); closeLaunchAlerts();">Request pay</button><button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View</button>`;
-      if(isRequestedUnpaid(t)) return `<button type="button" class="success" onclick="markPaid('${t.id}'); closeLaunchAlerts();">Mark paid</button>${t.paymentLink ? `<button type="button" class="secondary" onclick="openPaymentLinkFor('${t.id}'); closeLaunchAlerts();">Open form</button>` : ""}<button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View</button>`;
+      if(needsPaymentRequest(t)) return `${t.paymentLink ? `<button type="button" class="secondary" onclick="openPaymentLinkFor('${t.id}'); closeLaunchAlerts();">Form assist</button>` : ""}<button type="button" class="gold" onclick="openPaymentFor('${t.id}'); closeLaunchAlerts();">Request pay</button><button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View</button>`;
+      if(isRequestedUnpaid(t)) return `<button type="button" class="success" onclick="markPaid('${t.id}'); closeLaunchAlerts();">Mark paid</button>${t.paymentLink ? `<button type="button" class="secondary" onclick="openPaymentLinkFor('${t.id}'); closeLaunchAlerts();">Form assist</button>` : ""}<button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View</button>`;
       return `<button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View task</button>`;
     }
     function alertRow(title, items, kind, description){
@@ -4068,6 +4219,14 @@ Request number: ${requestNumber(task)}`;
     ["closeLaunchAlertBtn", "dismissLaunchAlertBtn"].forEach(id => $(id).addEventListener("click", closeLaunchAlerts));
     $("viewLaunchAlertItemsBtn").addEventListener("click", () => { closeLaunchAlerts(); switchTab("dashboard"); });
     $("launchAlertBackdrop").addEventListener("click", (e) => { if(e.target.id === "launchAlertBackdrop") closeLaunchAlerts(); });
+    ["closeFormAssistBtn", "closeFormAssistBottomBtn"].forEach(id => $(id)?.addEventListener("click", closeFormAssist));
+    $("formAssistBackdrop")?.addEventListener("click", (e) => { if(e.target.id === "formAssistBackdrop") closeFormAssist(); });
+    $("formAssistContent")?.addEventListener("click", (e) => {
+      const btn = e.target.closest(".copy-assist-btn");
+      if(btn) copyAssistValue(btn.dataset.copyIndex);
+    });
+    $("openFormAssistLinkBtn")?.addEventListener("click", openActiveFormAssistLink);
+    $("markFormAssistRequestedBtn")?.addEventListener("click", markActiveFormAssistRequested);
 
     function renderAll(){
       renderSuggestions();
