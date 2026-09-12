@@ -1,33 +1,40 @@
-Task Payment Tracker v16 - Google Drive master JSON sync setup
+Task Payment Tracker - Google Drive sync setup, fixed/easier version
 
-This is optional. Use it only if you want one master JSON to sync between phone and laptop.
+Important wording:
+- The key is named SYNC_KEY, singular.
+- There is no sync_keys field in the script.
+- The same private phrase must be used in the Apps Script code and inside the app.
 
+Steps:
 1. Go to https://script.google.com/ while signed in to the Google account that should own the master JSON.
 2. Create a new Apps Script project.
-3. Replace the default Code.gs with the contents of google_drive_sync_apps_script.gs.
-4. Change this line:
+3. Delete the default code in Code.gs.
+4. Paste the full contents of google_drive_sync_apps_script_v16_fixed.gs.
+5. Near the top, find:
 
    const SYNC_KEY = 'CHANGE_THIS_TO_A_PRIVATE_SYNC_KEY';
 
-   Use a private passphrase. You will enter the same passphrase inside the app.
+6. Replace only the text inside the quotes with your private phrase, for example:
 
-5. Click Save.
-6. Click Deploy > New deployment.
-7. Choose type: Web app.
-8. Set:
-   - Execute as: Me
-   - Who has access: Anyone with the link
-9. Click Deploy and approve permissions.
-10. Copy the Web App URL.
-11. Open your GitHub-hosted Task Payment Tracker.
-12. Go to Export > Cloud master JSON sync beta.
-13. Paste the Web App URL and the same Sync Key.
-14. Click Save cloud setup.
-15. On the device with the correct data, click Push to cloud.
-16. On the other device, click Pull from cloud.
+   const SYNC_KEY = 'my-private-task-sync-2026';
 
-Important notes:
-- This is designed for one user across their own devices.
-- Keep manual JSON backups while testing.
-- If two devices are edited offline, task-level updated timestamps are merged, but conflicts are still possible.
-- The cloud JSON may include setup/bank details if those are saved in the app. Use a trusted Google account and private sync key.
+7. Click Save.
+8. In the function dropdown, choose testPingFromEditor, then click Run.
+9. Approve permissions if asked.
+10. Check Execution log. It should include: "ok":true.
+11. Optional: run testPushSampleFromEditor, then testPullSampleFromEditor.
+12. Click Deploy > New deployment.
+13. Choose type: Web app.
+14. Set:
+    - Execute as: Me
+    - Who has access: Anyone with the link
+15. Click Deploy and approve permissions.
+16. Copy the Web App URL. It should end with /exec.
+17. Open Task Payment Tracker > Export > Cloud master JSON sync beta.
+18. Paste the Web App URL.
+19. Enter the same private phrase in Sync key/passphrase.
+20. Click Save cloud setup.
+21. On the device with correct data, click Push to cloud.
+22. On the other device, click Pull from cloud.
+
+Do not debug by running doGet or doPost directly. They need a web request event. Use the test...FromEditor functions instead.

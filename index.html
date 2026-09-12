@@ -83,7 +83,7 @@
     .hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .tabs{
       display:grid;
-      grid-template-columns:repeat(6, minmax(0,1fr));
+      grid-template-columns:repeat(7, minmax(0,1fr));
       gap:8px;
       margin:14px 0;
       position:sticky;
@@ -237,6 +237,8 @@
     }
 
     .request-actions button{min-width:116px}
+    .recipient-note{font-size:.78rem;color:var(--muted);margin-top:5px;line-height:1.35}
+    .recipient-chip{display:inline-block;border:1px solid var(--line);border-radius:999px;background:#fff;padding:4px 8px;margin:3px 4px 3px 0;font-size:.78rem}
     .request-helper{line-height:1.35}
     .request-helper strong{color:#4B0082}
     .copy-ok{background:#eaf7ef;border-color:#bde5cb;color:#135c2e}
@@ -282,10 +284,11 @@
     .pdf-stage-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#e9e5f2;padding:10px;max-height:620px}
     .pdf-stage{position:relative;margin:auto;display:inline-block;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.16)}
     #pdfTemplateCanvas{display:block;max-width:100%;height:auto}
-    .pdf-field-box{position:absolute;border:2px solid #4B0082;background:rgba(255,215,0,.25);border-radius:4px;min-width:48px;min-height:18px;cursor:pointer;padding:2px 4px;font-size:10px;overflow:hidden;white-space:nowrap}
+    .pdf-field-box{position:absolute;border:2px solid #4B0082;background:rgba(255,215,0,.25);border-radius:4px;min-width:48px;min-height:18px;cursor:move;padding:2px 4px;font-size:10px;overflow:hidden;white-space:nowrap;touch-action:none;user-select:none}
+    .pdf-field-box::after{content:"";position:absolute;right:0;bottom:0;width:12px;height:12px;border-right:3px solid rgba(75,0,130,.55);border-bottom:3px solid rgba(75,0,130,.55);background:rgba(255,255,255,.45)}
     .pdf-field-box.selected{outline:3px solid rgba(75,0,130,.25);background:rgba(255,215,0,.42)}
     .field-list{display:grid;gap:8px;margin-top:10px}
-    .field-editor-row{display:grid;grid-template-columns:1fr 1fr 78px 72px auto;gap:8px;align-items:end;border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px}
+    .field-editor-row{display:grid;grid-template-columns:1fr 1fr 72px 72px 72px 72px 84px auto;gap:8px;align-items:end;border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px}
     .field-editor-row input,.field-editor-row select{min-width:0}
     .editable-template-preview{border:1px solid var(--line);border-radius:14px;background:#fff;padding:12px;min-height:90px;max-height:260px;overflow:auto}
     .pdf-preview-card{border:1px solid var(--line);border-radius:15px;padding:14px;background:#fff}
@@ -513,6 +516,36 @@
       outline:3px solid rgba(75,0,130,.28);
       box-shadow:0 0 0 6px rgba(75,0,130,.08), var(--shadow);
     }
+    .smart-fill-panel{
+      border:1px solid #dacdf0;
+      background:#fbf8ff;
+      border-radius:16px;
+      padding:12px;
+      margin:10px 0 0;
+      box-shadow:0 8px 22px rgba(75,0,130,.07);
+    }
+    .smart-fill-panel h3{margin:0 0 4px;font-size:1rem}
+    .smart-fill-panel .smart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;margin:8px 0;color:var(--muted);font-size:.9rem}
+    .mini-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+    .mini-actions button{padding:7px 9px;min-height:32px;font-size:.82rem}
+    .alert-item-card{border-top:1px dashed var(--line);padding-top:8px}
+    .alert-item-card .alert-main{width:100%;border:0;border-radius:10px;background:transparent;color:var(--text);text-align:left;padding:4px 0;box-shadow:none;display:block;font-weight:800}
+    .alert-item-card .alert-main:hover{filter:none;color:var(--brand);background:transparent}
+    .stats-toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+    .stats-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+    .mini-stat{background:#fff;border:1px solid var(--line);border-radius:15px;padding:12px}
+    .mini-stat .value{font-size:1.3rem;font-weight:900;letter-spacing:-.03em}
+    .mini-stat .label{font-size:.82rem;color:var(--muted);margin-top:2px}
+    .chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
+    .bar-row{display:grid;grid-template-columns:minmax(90px,1fr) minmax(110px,2fr) auto;gap:8px;align-items:center;margin:8px 0;font-size:.88rem}
+    .bar-track{height:12px;background:#f0ebf8;border-radius:999px;overflow:hidden}
+    .bar-fill{height:100%;background:linear-gradient(90deg,var(--brand),#8a4fd6);border-radius:999px;min-width:2px}
+    .line-bars{display:flex;align-items:flex-end;gap:7px;min-height:150px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 4px}
+    .line-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:24px}
+    .line-bar-fill{width:100%;max-width:34px;background:linear-gradient(180deg,#8a4fd6,var(--brand));border-radius:8px 8px 0 0;min-height:2px}
+    .line-bar-label{font-size:.72rem;color:var(--muted);white-space:nowrap;transform:rotate(-25deg);margin-top:8px}
+    .payment-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+    .payment-action-grid label{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:12px;padding:9px;background:#fff;margin:0;font-weight:700;font-size:.86rem}
 
     .settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
     .modal-backdrop{
@@ -622,6 +655,7 @@
       .task-top .btn-row{margin-top:8px}
       .task-item .btn-row button{flex:1 1 140px}
       th,td{font-size:.84rem;padding:8px}
+      .stats-toolbar,.stats-kpis,.smart-fill-panel .smart-grid,.payment-action-grid{grid-template-columns:1fr}
     }
     @media print{
       body{background:#fff}
@@ -662,6 +696,7 @@
       <button class="tab" data-tab="tasks">Tasks</button>
       <button class="tab" data-tab="payment">Request Pay</button>
       <button class="tab" data-tab="templates">Templates</button>
+      <button class="tab" data-tab="stats">Stats</button>
       <button class="tab" data-tab="export">Export</button>
     </nav>
 
@@ -711,13 +746,21 @@
                   <label for="contactName">Contact person</label>
                   <input id="contactName" list="contactNameSuggestions" placeholder="Optional" />
                 </div>
+                <div class="span-2 hidden" id="smartFillPanel"></div>
                 <div>
-                  <label for="clientEmail">Client email</label>
+                  <label for="clientEmail">Primary client email</label>
                   <input id="clientEmail" type="email" list="clientEmailSuggestions" placeholder="name@example.com" />
                 </div>
                 <div>
                   <label for="clientPhone">Phone</label>
                   <input id="clientPhone" list="clientPhoneSuggestions" placeholder="Optional" />
+                </div>
+                <div class="span-2">
+                  <label for="additionalRecipients">Additional email recipients (optional)</label>
+                  <textarea id="additionalRecipients" placeholder="One per line, for example:
+Jane Smith <jane@example.com>
+accounts@example.com"></textarea>
+                  <div class="field-note">Used for payment request drafts. Greeting names are taken from these lines when available.</div>
                 </div>
                 <div>
                   <label for="location">Location</label>
@@ -806,6 +849,27 @@
                   <input id="paymentTerms" list="paymentTermsSuggestions" placeholder="e.g. Payment within 14 days" />
                 </div>
                 <div class="span-2">
+                  <label>Payment request actions</label>
+                  <div class="payment-action-grid">
+                    <label><input type="checkbox" id="paymentActionEmail" checked /> Email draft</label>
+                    <label><input type="checkbox" id="paymentActionPdf" checked /> PDF/document</label>
+                    <label><input type="checkbox" id="paymentActionForm" /> Form/link</label>
+                  </div>
+                  <div class="field-note">Choose any combination. This keeps the payment workflow flexible instead of forcing one method.</div>
+                </div>
+                <div class="span-2">
+                  <label for="paymentLink">Payment/request form link (optional)</label>
+                  <input id="paymentLink" placeholder="Google Form, Microsoft Form, portal link, or link with {{placeholders}}" />
+                  <div class="field-note">If the link contains placeholders such as {{full_name}}, {{task_title}}, {{fee}} or {{total_payable}}, the app fills them before opening.</div>
+                </div>
+                <div class="span-2">
+                  <label for="customFields">Extra form fields (optional)</label>
+                  <textarea id="customFields" placeholder="One per line, for example:
+age_group = U16
+match_number = 12345"></textarea>
+                  <div class="field-note">Useful for external forms that need details not already stored in the task.</div>
+                </div>
+                <div class="span-2">
                   <label for="notes">Task notes</label>
                   <textarea id="notes" placeholder="Instructions, preparation notes, agreed terms or anything to include in the calendar entry"></textarea>
                 </div>
@@ -831,7 +895,7 @@
             <h3>Task calendar entry</h3>
             <p class="muted">The calendar button downloads an .ics file for the task only. Payment follow-up is handled inside the dashboard, not in your calendar.</p>
             <h3>Email/payment flow</h3>
-            <p class="muted">After completion, generate a payment request, then choose the general format or the Club Academy Scotland referee claim form. Use Share file, Download, Print/Save PDF, Copy email body, Email draft, or the optional .eml package.</p>
+            <p class="muted">After completion, generate a payment request, then choose the general format, Club Academy Scotland form, or a saved template. v18 can address drafts to multiple saved recipients, open saved form/payment links, and use flexible request actions. Use Share file, Download, Print/Save PDF, Copy email body, Email draft, external form, or the optional .eml package.</p>
           </div>
         </div>
       </section>
@@ -880,7 +944,8 @@
             </select>
             <label for="requestTaskSelect">Choose completed task</label>
             <select id="requestTaskSelect"></select>
-            <div class="notice" style="margin:12px 0">Your name, address, bank details and mileage rate are pulled from Setup. The Club Academy form uses task title as Match and job title as Type of Official. Saved custom templates from Template Manager also appear in the Request format list.</div>
+            <div id="requestRecipientPreview" class="recipient-note"></div>
+            <div class="notice" style="margin:12px 0">Your name, address, bank details and mileage rate are pulled from Setup. The selected task can hold one primary email plus additional named recipients. The Club Academy form uses task title as Match and job title as Type of Official. Saved custom templates also appear here.</div>
             <div class="settings-grid">
               <div>
                 <label for="requestFromName">Your name/business</label>
@@ -900,6 +965,7 @@
               </div>
             </div>
             <label for="requestMessage">Email message</label>
+            <div class="recipient-note">Available email tokens: {contact}, {contacts}, {taskTitle}, {jobTitle}, {clientName}, {amount}, {fromName}</div>
             <textarea id="requestMessage">Dear {contact},
 
 Please find attached my payment request for the completed task: {taskTitle}.
@@ -915,9 +981,10 @@ Kind regards,
               <button class="gold" id="emailRequestBtn">Email draft</button>
               <button class="secondary" id="downloadEmlBtn">Download .eml</button>
               <button class="success" id="markRequestedBtn">Mark requested</button>
+              <button class="secondary" id="openPaymentLinkBtn">Open form/link</button>
             </div>
             <div id="emailFlowNote" class="notice request-helper small" style="margin-top:12px"></div>
-            <p class="muted small">Browser email drafts cannot reliably attach generated files. For the smoothest flow: Share file first on iPhone, or Download file/Print PDF and attach manually. The .eml option is experimental and mainly useful for testing on Mac/desktop email clients.</p>
+            <p class="muted small">Browser email drafts cannot reliably attach generated files. v18 improves the PDF/print output, but attaching still depends on the email app. Best flow: Share file first on iPhone, or open the clean print/PDF file and attach manually. The .eml option is experimental for Mac/desktop testing.</p>
           </div>
           <div class="card">
             <div id="requestPreview" class="request-preview"></div>
@@ -931,7 +998,7 @@ Kind regards,
           <div class="card">
             <h2>Template Builder</h2>
             <div class="notice">
-              v16 adds a visual Template Builder plus optional Google Drive master JSON sync. Word/HTML/text templates open as an editable document view by default. PDF templates use the overlay method: the original PDF is kept, and you place fill boxes over the spaces that need completing.
+              v18 improves PDF output and email handling. HTML/Word-style requests now open in a clean print-only window for Save as PDF, PDF overlay fields are easier to position, and tasks can store multiple named email recipients for payment drafts.
             </div>
             <div class="library-note">
               First use needs internet access for the free browser libraries used for DOCX/PDF processing. Saved templates stay in your app data and can be backed up by JSON or synced through the Google Drive bridge if configured.
@@ -1011,6 +1078,84 @@ Kind regards,
         </div>
       </section>
 
+      <section id="stats" class="tab-panel hidden">
+        <div class="card">
+          <h2>Stats and progress</h2>
+          <p class="muted" style="margin-top:0">Use this tab to see how tasks, payments and travel claims are progressing across a week, month, app year or custom range.</p>
+          <div class="stats-toolbar">
+            <div>
+              <label for="statsPreset">Time period</label>
+              <select id="statsPreset">
+                <option value="this_week">This week</option>
+                <option value="this_month">This month</option>
+                <option value="this_year">This app year (Apr-Mar)</option>
+                <option value="last_30">Last 30 days</option>
+                <option value="last_90">Last 90 days</option>
+                <option value="custom">Custom range</option>
+                <option value="all">All tasks</option>
+              </select>
+            </div>
+            <div>
+              <label for="statsClient">Client/company</label>
+              <select id="statsClient"><option value="all">All clients</option></select>
+            </div>
+            <div>
+              <label for="statsJob">Job title</label>
+              <select id="statsJob"><option value="all">All job titles</option></select>
+            </div>
+            <div>
+              <label for="statsPayment">Payment status</label>
+              <select id="statsPayment">
+                <option value="all">All</option>
+                <option value="not_requested">Not requested</option>
+                <option value="requested">Payment requested</option>
+                <option value="paid">Paid</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div>
+              <label for="statsStart">Start date</label>
+              <input id="statsStart" type="date" />
+            </div>
+            <div>
+              <label for="statsEnd">End date</label>
+              <input id="statsEnd" type="date" />
+            </div>
+            <div>
+              <label for="statsBasis">Date basis</label>
+              <select id="statsBasis">
+                <option value="taskDate">Task date</option>
+                <option value="completedDate">Completed date</option>
+                <option value="paymentRequestedDate">Payment requested date</option>
+                <option value="paidDate">Paid date</option>
+              </select>
+            </div>
+            <div style="align-self:end">
+              <button id="refreshStatsBtn" class="secondary" type="button">Refresh stats</button>
+            </div>
+          </div>
+          <div id="statsSummary" class="stats-kpis"></div>
+          <div class="grid two">
+            <div class="chart-card">
+              <h3>Task status mix</h3>
+              <div id="statsStatusChart"></div>
+            </div>
+            <div class="chart-card">
+              <h3>Top clients by amount</h3>
+              <div id="statsClientChart"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Paid amount trend</h3>
+            <div id="statsTrendChart"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Detailed summary</h3>
+            <div id="statsDetailTable"></div>
+          </div>
+        </div>
+      </section>
+
       <section id="export" class="tab-panel hidden">
         <div class="grid two">
           <div class="card">
@@ -1080,7 +1225,7 @@ Kind regards,
             <p class="muted small">Merge keeps the newest version of each task using its updated timestamp. If you deleted a task on one device and want the deletion reflected everywhere, use Replace from the device that has the correct final list.</p>
             <h3 style="margin-top:22px">Cloud master JSON sync beta</h3>
             <div class="notice">
-              Optional v16 feature for one user across phone and laptop. Host the app on GitHub Pages, then use a small Google Apps Script bridge to read/write one master JSON file in your Google Drive. Keep manual JSON backup as a safety fallback.
+              Optional v16/v18 feature for one user across phone and laptop. Host the app on GitHub Pages, then use a small Google Apps Script bridge to read/write one master JSON file in your Google Drive. Keep manual JSON backup as a safety fallback.
             </div>
             <div class="form-grid" style="margin-top:10px">
               <div class="span-2">
@@ -1121,7 +1266,7 @@ Kind regards,
             </div>
             <div id="cloudSyncStatus" class="cloud-status small"><span class="cloud-dot"></span><span>Cloud sync is not configured.</span></div>
             <div class="library-note">
-              v16 uses a free Apps Script bridge. Because this is a single master JSON, it is best for your own phone/laptop sync, not multiple separate users. If both devices edit while offline, newest task-level updates are merged, but you should still keep JSON backups.
+              v18 keeps the free Apps Script bridge for one-user phone/laptop sync. It is best for your own devices, not for multiple separate users. Keep JSON backups while testing.
             </div>
           </div>
           <div class="card">
@@ -1241,6 +1386,11 @@ Kind regards,
             <label for="setupDueDays">Default payment due days</label>
             <input id="setupDueDays" type="number" min="0" step="1" value="14" />
           </div>
+          <div>
+            <label for="setupGraceHours">Status alert grace period</label>
+            <input id="setupGraceHours" type="number" min="0" step="0.25" value="1" />
+            <div class="field-note">Default is 1 hour after scheduled end time before asking you to update status.</div>
+          </div>
         </div>
         <div class="btn-row" style="margin-top:14px">
           <button type="submit">Save setup</button>
@@ -1321,7 +1471,7 @@ Kind regards,
       scheduleCloudPush("templates");
     }
     function loadSettings(){
-      const defaults = {defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14"};
+      const defaults = {defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14", graceHours:"1"};
       try { return {...defaults, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")}; }
       catch(e){ return defaults; }
     }
@@ -1413,6 +1563,7 @@ Kind regards,
       document.querySelectorAll(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
       document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.toggle("hidden", panel.id !== tab));
       if(tab === "payment") renderRequestOptions();
+      if(tab === "stats") renderStats();
       if(tab === "export") renderExportPreview();
       window.scrollTo({top:0, behavior:"smooth"});
     }
@@ -1449,6 +1600,7 @@ Kind regards,
       $("setupAccountNumber").value = settings.accountNumber || "";
       $("setupMileageRate").value = settings.mileageRate || "0.45";
       $("setupDueDays").value = settings.dueDays || "14";
+      $("setupGraceHours").value = settings.graceHours || "1";
       $("setupModalBackdrop").classList.remove("hidden");
       $("setupModalBackdrop").setAttribute("aria-hidden", "false");
     }
@@ -1473,6 +1625,7 @@ Kind regards,
       settings.accountNumber = $("setupAccountNumber").value.trim();
       settings.mileageRate = $("setupMileageRate").value || "0";
       settings.dueDays = $("setupDueDays").value || "14";
+      settings.graceHours = $("setupGraceHours").value || "1";
       settings.fromName = profileFullName();
       settings.paymentDetails = bankDetailsText();
       saveSettings();
@@ -1484,10 +1637,36 @@ Kind regards,
     }
     function clearSetup(){
       if(!confirm("Clear saved setup details from this browser?")) return;
-      settings = {defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14"};
+      settings = {defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14", graceHours:"1"};
       saveSettings();
       openSetup();
       showToast("Setup cleared");
+    }
+
+    function getPaymentActionsFromForm(){
+      return {
+        email: !!$("paymentActionEmail")?.checked,
+        pdf: !!$("paymentActionPdf")?.checked,
+        form: !!$("paymentActionForm")?.checked
+      };
+    }
+    function setPaymentActionsOnForm(actions){
+      const a = typeof actions === "object" && actions ? actions : {email:true, pdf:true, form:false};
+      if($("paymentActionEmail")) $("paymentActionEmail").checked = a.email !== false;
+      if($("paymentActionPdf")) $("paymentActionPdf").checked = a.pdf !== false;
+      if($("paymentActionForm")) $("paymentActionForm").checked = !!a.form;
+    }
+    function parseCustomFields(text){
+      const out = {};
+      String(text || "").split(/\n+/).forEach(line => {
+        const idx = line.indexOf("=");
+        if(idx > -1){
+          const key = line.slice(0, idx).trim();
+          const value = line.slice(idx + 1).trim();
+          if(key) out[key] = value;
+        }
+      });
+      return out;
     }
 
     function getFormTask(){
@@ -1499,6 +1678,7 @@ Kind regards,
         contactName: $("contactName").value.trim(),
         clientEmail: $("clientEmail").value.trim(),
         clientPhone: $("clientPhone").value.trim(),
+        additionalRecipients: $("additionalRecipients").value.trim(),
         location: $("location").value.trim(),
         taskDate: $("taskDate").value,
         startTime: $("startTime").value,
@@ -1515,6 +1695,9 @@ Kind regards,
         paymentRequestedDate: $("paymentRequestedDate").value,
         paidDate: $("paidDate").value,
         paymentTerms: $("paymentTerms").value.trim(),
+        paymentActions: getPaymentActionsFromForm(),
+        paymentLink: $("paymentLink").value.trim(),
+        customFields: $("customFields").value.trim(),
         notes: $("notes").value.trim(),
         cancellationReason: $("cancellationReason").value.trim(),
         updatedAt: new Date().toISOString(),
@@ -1531,6 +1714,7 @@ Kind regards,
       $("contactName").value = t.contactName || "";
       $("clientEmail").value = t.clientEmail || "";
       $("clientPhone").value = t.clientPhone || "";
+      $("additionalRecipients").value = t.additionalRecipients || "";
       $("location").value = t.location || "";
       $("taskDate").value = t.taskDate || "";
       $("startTime").value = t.startTime || "";
@@ -1548,6 +1732,9 @@ Kind regards,
       $("paymentRequestedDate").value = t.paymentRequestedDate || "";
       $("paidDate").value = t.paidDate || "";
       $("paymentTerms").value = t.paymentTerms || "";
+      setPaymentActionsOnForm(t.paymentActions);
+      $("paymentLink").value = t.paymentLink || "";
+      $("customFields").value = t.customFields || "";
       $("notes").value = t.notes || "";
       $("cancellationReason").value = t.cancellationReason || "";
       updateCancellationReasonVisibility();
@@ -1567,8 +1754,12 @@ Kind regards,
       $("taskDate").value = todayISO();
       $("startTime").value = "09:00";
       $("endTime").value = "17:00";
+      setPaymentActionsOnForm({email:true, pdf:true, form:false});
+      $("paymentLink").value = "";
+      $("customFields").value = "";
       $("cancellationReason").value = "";
       updateCancellationReasonVisibility();
+      updateSmartFillPanel();
     }
 
     $("taskForm").addEventListener("submit", (e) => {
@@ -1590,6 +1781,8 @@ Kind regards,
     $("resetFormBtn").addEventListener("click", resetForm);
     ["claimTravel", "travelMiles", "travelRate", "currency", "feeAmount"].forEach(id => $(id).addEventListener("input", updateTravelPreview));
     ["claimTravel", "currency"].forEach(id => $(id).addEventListener("change", updateTravelPreview));
+    ["clientName", "contactName", "clientEmail", "location"].forEach(id => $(id)?.addEventListener("input", updateSmartFillPanel));
+    ["paymentActionEmail", "paymentActionPdf", "paymentActionForm"].forEach(id => $(id)?.addEventListener("change", () => { if($("paymentActionForm")?.checked && !$("paymentLink")?.value) showToast("Add a form or payment link if needed"); }));
     function updateTravelPreview(){
       const claim = $("claimTravel").value === "yes";
       $("travelMiles").disabled = !claim;
@@ -1630,8 +1823,21 @@ Kind regards,
 
     function isUnpaid(t){ return t.taskStatus === "completed" && t.paymentStatus !== "paid"; }
     function overdueDays(t){ return isUnpaid(t) ? daysBetween(t.paymentRequestedDate || t.completedDate || t.taskDate, todayISO()) : 0; }
-    function isPastIncomplete(t){ return t.taskStatus === "upcoming" && !!t.taskDate && t.taskDate < todayISO(); }
-    function isDueToday(t){ return t.taskStatus === "upcoming" && t.taskDate === todayISO(); }
+    function taskScheduledEnd(t){
+      if(!t?.taskDate) return null;
+      const time = t.endTime || t.startTime || "23:59";
+      const d = new Date(`${t.taskDate}T${time}:00`);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+    function taskPassedGrace(t){
+      const end = taskScheduledEnd(t);
+      if(!end) return false;
+      const grace = Number(settings.graceHours ?? 1);
+      const hours = Number.isFinite(grace) && grace >= 0 ? grace : 1;
+      return new Date().getTime() >= end.getTime() + hours * 3600000;
+    }
+    function isPastIncomplete(t){ return t.taskStatus === "upcoming" && taskPassedGrace(t); }
+    function isDueToday(t){ return t.taskStatus === "upcoming" && t.taskDate === todayISO() && !isPastIncomplete(t); }
     function isDueSoon(t, days = 7){
       if(t.taskStatus !== "upcoming" || !t.taskDate) return false;
       const diff = daysBetween(todayISO(), t.taskDate);
@@ -1655,7 +1861,7 @@ Kind regards,
     function workflowState(t){
       if(t.taskStatus === "cancelled") return {label:"Cancelled", badgeClass:"danger", note:t.cancellationReason ? `Cancelled: ${t.cancellationReason}` : "Removed from active workflow", cardClass:""};
       if(t.paymentStatus === "paid") return {label:"Paid", badgeClass:"success", note:t.paidDate ? `Paid on ${fmtDate(t.paidDate)}` : "Payment received", cardClass:""};
-      if(isPastIncomplete(t)) return {label:"Date passed", badgeClass:"danger", note:"Task date has passed. Mark completed or cancel.", cardClass:"urgent"};
+      if(isPastIncomplete(t)) return {label:"Date passed", badgeClass:"danger", note:"Scheduled time plus grace period has passed. Mark completed, reschedule or cancel.", cardClass:"urgent"};
       if(needsPaymentRequest(t)) return {label:"Request pay", badgeClass:"warning", note:"Completed. Payment request has not been sent yet.", cardClass:"warning-soft"};
       if(isRequestedUnpaid(t)){
         const od = overdueDays(t);
@@ -1676,16 +1882,18 @@ Kind regards,
       if(t.paymentStatus === "paid"){
         return `${viewButton}${calendarButton}`;
       }
+      const formButton = t.paymentLink ? `<button class="secondary" onclick="openPaymentLinkFor('${t.id}')">Open form</button>` : "";
+      const rescheduleButton = t.taskStatus !== "cancelled" ? `<button class="secondary" onclick="rescheduleTask('${t.id}')">Reschedule</button>` : "";
       if(isPastIncomplete(t)){
-        return `<button class="success action-primary" onclick="markCompleted('${t.id}')">Mark completed</button>${calendarButton}${viewButton}${cancelButton}`;
+        return `<button class="success action-primary" onclick="markCompleted('${t.id}')">Mark completed</button>${rescheduleButton}${calendarButton}${viewButton}${cancelButton}`;
       }
       if(needsPaymentRequest(t)){
-        return `<button class="gold action-primary" onclick="openPaymentFor('${t.id}')">Request pay</button><button class="success" onclick="markPaid('${t.id}')">Mark paid</button>${viewButton}${cancelButton}`;
+        return `${formButton}<button class="gold action-primary" onclick="openPaymentFor('${t.id}')">Request pay</button><button class="success" onclick="markPaid('${t.id}')">Mark paid</button>${viewButton}${cancelButton}`;
       }
       if(isRequestedUnpaid(t)){
-        return `<button class="success action-primary" onclick="markPaid('${t.id}')">Mark paid</button><button class="gold" onclick="openPaymentFor('${t.id}')">Send again</button>${viewButton}${cancelButton}`;
+        return `<button class="success action-primary" onclick="markPaid('${t.id}')">Mark paid</button>${formButton}<button class="gold" onclick="openPaymentFor('${t.id}')">Send again</button>${viewButton}${cancelButton}`;
       }
-      return `${calendarButton}<button class="success" onclick="markCompleted('${t.id}')">Complete</button>${viewButton}${cancelButton}`;
+      return `${calendarButton}<button class="success" onclick="markCompleted('${t.id}')">Complete</button>${rescheduleButton}${viewButton}${cancelButton}`;
     }
 
     function financialYearRange(date = new Date()){
@@ -1794,6 +2002,10 @@ Kind regards,
         <div class="small muted">
           ${t.location ? `<div><strong>Location:</strong> ${escapeHtml(t.location)}</div>` : ""}
           ${t.clientEmail ? `<div><strong>Email:</strong> ${escapeHtml(t.clientEmail)}</div>` : ""}
+          ${t.additionalRecipients ? `<div><strong>Additional recipients:</strong> ${escapeHtml(t.additionalRecipients).replace(/\n/g,"<br>")}</div>` : ""}
+          ${t.paymentLink ? `<div><strong>Payment/form link:</strong> ${escapeHtml(t.paymentLink)}</div>` : ""}
+          ${t.paymentActions ? `<div><strong>Request actions:</strong> ${Object.entries(t.paymentActions).filter(([k,v])=>v).map(([k])=>k === "pdf" ? "PDF/document" : k === "form" ? "Form/link" : "Email").join(", ") || "Not set"}</div>` : ""}
+          ${t.customFields ? `<div><strong>Extra fields:</strong> ${escapeHtml(t.customFields).replace(/\n/g,"<br>")}</div>` : ""}
           ${t.claimTravel === "yes" ? `<div><strong>Travel claim:</strong> ${escapeHtml(t.travelMiles || "0")} miles × ${money(t.travelRate || settings.mileageRate || 0, t.currency)} per mile = ${money(travelAmount(t), t.currency)}</div>` : ""}
           ${t.notes ? `<div><strong>Notes:</strong> ${escapeHtml(t.notes)}</div>` : ""}
           ${t.cancellationReason ? `<div><strong>Cancellation reason:</strong> ${escapeHtml(t.cancellationReason)}</div>` : ""}
@@ -1871,10 +2083,149 @@ Kind regards,
       saveTasks();
       showToast("Marked as paid");
     };
+    window.rescheduleTask = function(id){
+      const t = tasks.find(x => x.id === id);
+      if(!t) return;
+      const nextDate = prompt(`New date for "${t.taskTitle}" (YYYY-MM-DD):`, t.taskDate || todayISO());
+      if(nextDate === null) return;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(nextDate.trim())){ showToast("Use date format YYYY-MM-DD"); return; }
+      const nextStart = prompt("New start time (HH:MM):", t.startTime || "09:00");
+      if(nextStart === null) return;
+      const nextEnd = prompt("New end time (HH:MM):", t.endTime || nextStart || "17:00");
+      if(nextEnd === null) return;
+      t.taskDate = nextDate.trim();
+      t.startTime = nextStart.trim() || t.startTime || "09:00";
+      t.endTime = nextEnd.trim() || t.endTime || t.startTime;
+      t.taskStatus = "upcoming";
+      t.updatedAt = new Date().toISOString();
+      saveTasks();
+      showToast("Task rescheduled");
+    };
+    function templateValues(task){
+      const keys = [
+        "full_name","first_name","last_name","address_line1","address_line2","address_line3","town","postcode","home_postcode",
+        "bank_account_name","bank_name","bank_sort_code","bank_account_number","task_title","job_title","task_date","completed_date",
+        "client_name","contact_name","client_email","recipient_emails","recipient_names","location","fee","miles","mileage_rate",
+        "travel_amount","total_payable","currency","today","due_date","reference","notes","payment_link","form_link"
+      ];
+      const vals = {};
+      keys.forEach(k => vals[k] = templateFieldValue(k, task));
+      vals.payment_link = task.paymentLink || "";
+      vals.form_link = task.paymentLink || "";
+      Object.assign(vals, parseCustomFields(task.customFields));
+      return vals;
+    }
+    function buildPaymentLink(task){
+      let link = String(task.paymentLink || "").trim();
+      if(!link) return "";
+      const values = templateValues(task);
+      const custom = parseCustomFields(task.customFields);
+      Object.entries(custom).forEach(([k,v]) => { values[k] = v; });
+      link = link.replace(/\{\{\s*([^}]+?)\s*\}\}/g, (_, key) => encodeURIComponent(values[String(key).trim()] ?? ""));
+      link = link.replace(/\{\s*([^}]+?)\s*\}/g, (match, key) => {
+        const trimmed = String(key).trim();
+        if(values[trimmed] === undefined) return match;
+        return encodeURIComponent(values[trimmed] ?? "");
+      });
+      return link;
+    }
+    window.openPaymentLinkFor = function(id){
+      const t = tasks.find(x => x.id === id);
+      if(!t || !t.paymentLink){ showToast("No payment/form link saved for this task"); return; }
+      const url = buildPaymentLink(t);
+      try{
+        window.open(url, "_blank", "noopener");
+        t.formOpenedAt = new Date().toISOString();
+        if(t.taskStatus === "completed" && t.paymentStatus === "not_requested"){
+          t.paymentStatus = "requested";
+          t.paymentRequestedDate = t.paymentRequestedDate || todayISO();
+        }
+        t.updatedAt = new Date().toISOString();
+        saveTasks();
+        showToast("Payment form/link opened and task marked requested");
+      }catch(e){ showToast("Could not open payment link"); }
+    };
+
     window.openPaymentFor = function(id){
       selectedRequestTaskId = id;
       renderRequestOptions();
       switchTab("payment");
+    };
+
+    function findSmartFillCandidate(){
+      const currentId = $("taskId")?.value || "";
+      const company = ($("clientName")?.value || "").trim().toLowerCase();
+      const contact = ($("contactName")?.value || "").trim().toLowerCase();
+      const email = ($("clientEmail")?.value || "").trim().toLowerCase();
+      const location = ($("location")?.value || "").trim().toLowerCase();
+      if([company, contact, email, location].every(v => v.length < 3)) return null;
+      const candidates = tasks.filter(t => t.id !== currentId).map(t => {
+        let score = 0;
+        if(company && String(t.clientName || "").toLowerCase() === company) score += 40;
+        else if(company && String(t.clientName || "").toLowerCase().includes(company)) score += 18;
+        if(contact && String(t.contactName || "").toLowerCase() === contact) score += 35;
+        else if(contact && String(t.contactName || "").toLowerCase().includes(contact)) score += 12;
+        if(email && String(t.clientEmail || "").toLowerCase() === email) score += 45;
+        if(location && String(t.location || "").toLowerCase().includes(location)) score += 15;
+        return {t, score};
+      }).filter(x => x.score > 0).sort((a,b) => b.score - a.score || String(b.t.updatedAt || b.t.createdAt || "").localeCompare(String(a.t.updatedAt || a.t.createdAt || "")));
+      return candidates[0]?.t || null;
+    }
+    function updateSmartFillPanel(){
+      const panel = $("smartFillPanel");
+      if(!panel) return;
+      const candidate = findSmartFillCandidate();
+      if(!candidate){ panel.classList.add("hidden"); panel.innerHTML = ""; return; }
+      panel.className = "span-2 smart-fill-panel";
+      panel.innerHTML = `<h3>Previous details found</h3>
+        <div class="muted small">Last matching record: <strong>${escapeHtml(candidate.clientName || "Client")}</strong> · ${escapeHtml(candidate.contactName || "No contact name")} · ${fmtDate(candidate.taskDate || "")}</div>
+        <div class="smart-grid">
+          <div><strong>Email:</strong> ${escapeHtml(candidate.clientEmail || "Not saved")}</div>
+          <div><strong>Location:</strong> ${escapeHtml(candidate.location || "Not saved")}</div>
+          <div><strong>Payment link:</strong> ${candidate.paymentLink ? "Saved" : "Not saved"}</div>
+          <div><strong>Travel:</strong> ${candidate.claimTravel === "yes" ? `${escapeHtml(candidate.travelMiles || "0")} miles` : "Not claimed"}</div>
+        </div>
+        <div class="mini-actions">
+          <button type="button" class="success" onclick="applySmartFill('${candidate.id}','all')">Use all</button>
+          <button type="button" class="secondary" onclick="applySmartFill('${candidate.id}','contact')">Contact only</button>
+          <button type="button" class="secondary" onclick="applySmartFill('${candidate.id}','location')">Location/travel</button>
+          <button type="button" class="secondary" onclick="applySmartFill('${candidate.id}','payment')">Payment setup</button>
+          <button type="button" class="secondary" onclick="dismissSmartFill()">Ignore</button>
+        </div>`;
+    }
+    window.dismissSmartFill = function(){ const panel = $("smartFillPanel"); if(panel){ panel.classList.add("hidden"); panel.innerHTML = ""; } };
+    function fillIfEmpty(id, value, force=false){ if(!$(id)) return; if(force || !$(id).value) $(id).value = value || ""; }
+    window.applySmartFill = function(taskId, mode){
+      const t = tasks.find(x => x.id === taskId);
+      if(!t) return;
+      const force = mode === "all";
+      if(mode === "all" || mode === "contact"){
+        fillIfEmpty("clientName", t.clientName, force);
+        fillIfEmpty("contactName", t.contactName, force);
+        fillIfEmpty("clientEmail", t.clientEmail, force);
+        fillIfEmpty("clientPhone", t.clientPhone, force);
+        fillIfEmpty("additionalRecipients", t.additionalRecipients, force);
+      }
+      if(mode === "all" || mode === "location"){
+        fillIfEmpty("location", t.location, force);
+        if(force || $("claimTravel").value === "no") $("claimTravel").value = t.claimTravel || "no";
+        fillIfEmpty("travelMiles", t.travelMiles, force);
+        fillIfEmpty("travelRate", t.travelRate || settings.mileageRate, force);
+      }
+      if(mode === "all" || mode === "payment"){
+        fillIfEmpty("paymentTerms", t.paymentTerms, force);
+        fillIfEmpty("paymentLink", t.paymentLink, force);
+        fillIfEmpty("customFields", t.customFields, force);
+        setPaymentActionsOnForm(t.paymentActions || {email:true, pdf:true, form:!!t.paymentLink});
+      }
+      if(mode === "all"){
+        fillIfEmpty("jobTitle", t.jobTitle, false);
+        if(!$("feeAmount").value) $("feeAmount").value = t.feeAmount || "";
+        if(t.currency) $("currency").value = t.currency;
+      }
+      updateTravelPreview();
+      dismissSmartFill();
+      showToast("Previous details applied. Please check before saving.");
     };
 
     function downloadIcsById(id){ const t = tasks.find(x => x.id === id); if(t) downloadIcs(t); }
@@ -1893,6 +2244,7 @@ Kind regards,
         `Payment: ${money(totalAmount(t), t.currency)}`,
         t.claimTravel === "yes" ? `Travel: ${t.travelMiles || 0} miles at ${money(t.travelRate || settings.mileageRate || 0, t.currency)} per mile` : "Travel: Not claimed",
         `Reference: ${t.referenceNo || ""}`,
+        `Payment/form link: ${t.paymentLink || ""}`,
         "",
         t.notes || ""
       ].join("\n");
@@ -1968,6 +2320,7 @@ Kind regards,
     $("emailRequestBtn").addEventListener("click", openEmailDraft);
     $("downloadEmlBtn").addEventListener("click", downloadEmailPackage);
     $("markRequestedBtn").addEventListener("click", markSelectedRequested);
+    $("openPaymentLinkBtn")?.addEventListener("click", () => { const task = selectedRequestTask(); if(task) openPaymentLinkFor(task.id); else showToast("Choose a task first"); });
 
     function selectedRequestTask(){ return tasks.find(t => t.id === $("requestTaskSelect").value) || tasks.find(t => t.id === selectedRequestTaskId); }
     function dueDateFrom(task){
@@ -2132,11 +2485,23 @@ Kind regards,
     function updateEmailFlowNote(task){
       const box = $("emailFlowNote");
       if(!box) return;
-      if(!task){ box.innerHTML = "Complete a task first, then choose it here to prepare the request and email."; return; }
-      const hasEmail = Boolean(task.clientEmail);
+      if(!task){ box.innerHTML = "Complete a task first, then choose it here to prepare the request and email."; updateRecipientPreview(null); return; }
+      updateRecipientPreview(task);
+      const hasEmail = taskRecipients(task).length > 0;
+      const hasLink = !!task.paymentLink;
       const canFileShare = !!(navigator.canShare && typeof File !== "undefined");
       const fileType = selectedRequestIsPdfOverlay() ? "PDF" : "HTML request file";
-      box.innerHTML = `<strong>Suggested send flow:</strong> ${canFileShare ? `try Share file first on iPhone; this request will be generated as a ${fileType}` : `download the ${fileType}, then attach it manually`}. ${hasEmail ? "The Email draft button will address the email to the saved client email." : "No client email is saved for this task, so the draft will open without a recipient."}`;
+      box.innerHTML = `<strong>Suggested send flow:</strong> ${canFileShare ? `try Share file first on iPhone; this request will be generated as a ${fileType}` : `download the ${fileType}, then attach it manually`}. ${hasEmail ? "The Email draft button will address all saved recipients." : "No client email is saved for this task, so the draft will open without a recipient."} ${hasLink ? "This task also has a form/link available." : ""}`;
+    }
+    function openCleanPrintWindow(task){
+      const html = requestDocumentHtml(task);
+      const w = window.open("", "_blank");
+      if(!w){ showToast("Pop-up blocked. Use Download file, then print from the opened file."); return; }
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      setTimeout(() => { try{ w.focus(); w.print(); }catch(e){} }, 500);
+      showToast("Clean print view opened. Use Save as PDF if needed.");
     }
     async function printRequestDocument(){
       renderRequestPreview();
@@ -2151,7 +2516,7 @@ Kind regards,
         }catch(e){ showToast("Could not generate the filled PDF. Check the template fields."); }
         return;
       }
-      window.print();
+      openCleanPrintWindow(task);
     }
     async function downloadRequestHtml(){
       const task = selectedRequestTask();
@@ -2187,10 +2552,58 @@ Kind regards,
         showToast("Share cancelled or unavailable");
       }
     }
+    function parseAdditionalRecipients(text){
+      return String(text || "")
+        .split(/[\n;]+/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          let name = "", email = "";
+          const angle = line.match(/^(.*?)<([^>]+)>$/);
+          if(angle){ name = angle[1].trim().replace(/^"|"$/g, ""); email = angle[2].trim(); }
+          else {
+            const emailMatch = line.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+            if(emailMatch){
+              email = emailMatch[0].trim();
+              name = line.replace(emailMatch[0], "").replace(/[,()<>-]+/g, " ").trim();
+            } else name = line;
+          }
+          return {name, email};
+        })
+        .filter(r => r.email);
+    }
+    function taskRecipients(task){
+      const list = [];
+      if(task.clientEmail) list.push({name:task.contactName || task.clientName || "", email:task.clientEmail});
+      list.push(...parseAdditionalRecipients(task.additionalRecipients));
+      const seen = new Set();
+      return list.filter(r => {
+        const key = String(r.email || "").toLowerCase();
+        if(!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+    function recipientDisplayName(r){ return r.name ? `${r.name} <${r.email}>` : r.email; }
+    function recipientEmails(task){ return taskRecipients(task).map(r => r.email).join(", "); }
+    function recipientNames(task){
+      const names = taskRecipients(task).map(r => r.name).filter(Boolean);
+      if(names.length) return names.join(names.length === 2 ? " and " : ", ").replace(/, ([^,]*)$/, names.length > 2 ? ", and $1" : " and $1");
+      return task.contactName || task.clientName || "there";
+    }
+    function recipientHeader(task){ return taskRecipients(task).map(recipientDisplayName).join(", "); }
+    function mailtoRecipientPath(task){ return taskRecipients(task).map(r => encodeURIComponent(r.email)).join(","); }
+    function updateRecipientPreview(task){
+      const box = $("requestRecipientPreview");
+      if(!box) return;
+      const recips = task ? taskRecipients(task) : [];
+      box.innerHTML = recips.length ? `Draft will be addressed to: ${recips.map(r => `<span class="recipient-chip">${escapeHtml(recipientDisplayName(r))}</span>`).join("")}` : "No recipient email is saved for this task.";
+    }
     function replaceTokens(template, task){
-      const contact = task.contactName || task.clientName || "there";
+      const contact = recipientNames(task);
       return template
         .replaceAll("{contact}", contact)
+        .replaceAll("{contacts}", contact)
         .replaceAll("{taskTitle}", task.taskTitle || "the completed task")
         .replaceAll("{jobTitle}", task.jobTitle || "")
         .replaceAll("{clientName}", task.clientName || "")
@@ -2233,7 +2646,7 @@ Request number: ${requestNumber(task)}`;
     function openEmailDraft(){
       const task = selectedRequestTask();
       if(!task){ showToast("Choose a completed task first"); return; }
-      const to = encodeURIComponent(task.clientEmail || "");
+      const to = mailtoRecipientPath(task);
       const subject = encodeURIComponent(requestSubject(task));
       const body = encodeURIComponent(buildEmailBody(task) + "\n\nAttachment note: browser email drafts cannot reliably attach generated files. Please attach the downloaded/printed request file before sending.");
       window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
@@ -2261,7 +2674,7 @@ Request number: ${requestNumber(task)}`;
       const ext = requestDocumentExtension();
       const mime = requestDocumentMime();
       const filename = `${requestFileBaseName(task)}.${ext}`;
-      const toHeader = (task.clientEmail || "").replace(/[\r\n]/g, " ");
+      const toHeader = recipientHeader(task).replace(/[\r\n]/g, " ");
       const subjectHeader = requestSubject(task).replace(/[\r\n]/g, " ");
       const body = buildEmailBody(task) + "\n\nThe payment request file is attached to this email package. If your email app opens this as a received message rather than a draft, create a new email and attach the downloaded request file manually.";
       const attachmentB64 = mime === "text/html" ? utf8Base64(await blob.text()) : await blobBase64(blob);
@@ -2324,7 +2737,11 @@ Request number: ${requestNumber(task)}`;
       ["completed_date", "Task: completed date"],
       ["client_name", "Task: client/company"],
       ["contact_name", "Task: contact person"],
-      ["client_email", "Task: client email"],
+      ["client_email", "Task: primary client email"],
+      ["recipient_emails", "Email: all recipient emails"],
+      ["recipient_names", "Email: all recipient names"],
+      ["payment_link", "Payment/form link"],
+      ["form_link", "Prefilled form link"],
       ["location", "Task: location"],
       ["fee", "Money: agreed fee"],
       ["miles", "Travel: miles"],
@@ -2354,7 +2771,7 @@ Request number: ${requestNumber(task)}`;
         job_title:"job_title", type_of_official:"job_title", role:"job_title",
         task_date:"task_date", date:"task_date", completed_date:"completed_date",
         client:"client_name", client_name:"client_name", company:"client_name",
-        contact:"contact_name", contact_person:"contact_name", email:"client_email", client_email:"client_email",
+        contact:"contact_name", contact_person:"contact_name", email:"client_email", client_email:"client_email", recipient_emails:"recipient_emails", recipients:"recipient_emails", recipient_names:"recipient_names",
         location:"location", venue:"location",
         fee:"fee", fees:"fee", match_fee:"fee", agreed_payment:"fee",
         bank_account_number:"bank_account_number", account_number:"bank_account_number",
@@ -2458,6 +2875,8 @@ Request number: ${requestNumber(task)}`;
         client_name: task.clientName || "",
         contact_name: task.contactName || "",
         client_email: task.clientEmail || "",
+        recipient_emails: recipientEmails(task),
+        recipient_names: recipientNames(task),
         location: task.location || "",
         fee: money(task.feeAmount, currency),
         miles: task.travelMiles || "",
@@ -2468,7 +2887,9 @@ Request number: ${requestNumber(task)}`;
         today: fmtDate(todayISO()),
         due_date: fmtDate(dueDateFrom(task)),
         reference: task.referenceNo || requestNumber(task),
-        notes: task.notes || ""
+        notes: task.notes || "",
+        payment_link: task.paymentLink || "",
+        form_link: task.paymentLink || ""
       };
       return val[key] ?? "";
     }
@@ -2603,31 +3024,62 @@ Request number: ${requestNumber(task)}`;
       const fields = tpl.pdfFields || [];
       return `<div class="pdf-preview-card"><h2>${escapeHtml(tpl.name || "PDF overlay template")}</h2><p>This is a PDF overlay template. The original PDF layout is preserved when you use <strong>Download file</strong>, <strong>Share file</strong>, or <strong>Print/Save PDF</strong>. Inline preview shows the fields that will be filled.</p><div class="pdf-preview-fields">${fields.length ? fields.map(f => `<div class="badge">Page ${f.page}: ${escapeHtml(f.label || f.field || "Field")} = <strong>${escapeHtml(pdfFieldValue(f, task) || "")}</strong></div>`).join("") : `<div class="empty">No PDF fill fields saved in this template.</div>`}</div></div>`;
     }
+    function wrapPdfText(value, font, fontSize, maxWidth){
+      const rawLines = String(value || "").replace(/\r/g, "").split("\n");
+      const lines = [];
+      rawLines.forEach(raw => {
+        const words = raw.split(/\s+/).filter(Boolean);
+        if(!words.length){ lines.push(""); return; }
+        let line = "";
+        words.forEach(word => {
+          const test = line ? `${line} ${word}` : word;
+          const width = font.widthOfTextAtSize(test, fontSize);
+          if(width > maxWidth && line){ lines.push(line); line = word; }
+          else line = test;
+        });
+        if(line) lines.push(line);
+      });
+      return lines;
+    }
     async function buildFilledPdfBlob(tpl, task){
       if(!window.PDFLib) throw new Error("PDF fill library unavailable");
       const bytes = base64ToUint8Array(tpl.pdfBase64 || "");
-      const pdfDoc = await PDFLib.PDFDocument.load(bytes);
+      const pdfDoc = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
       const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
       const pages = pdfDoc.getPages();
       (tpl.pdfFields || []).forEach(field => {
         const page = pages[(Number(field.page || 1) - 1)] || pages[0];
         if(!page) return;
         const value = String(pdfFieldValue(field, task) || "");
+        if(!value) return;
         const { width, height } = page.getSize();
+        const fontSize = Number(field.fontSize || 10);
         const x = Number(field.x || 0) * width;
-        const boxH = Number(field.h || .03) * height;
         const yTop = Number(field.y || 0) * height;
-        const y = height - yTop - boxH + Math.max(2, boxH * .22);
-        page.drawText(value, {
-          x,
-          y,
-          size: Number(field.fontSize || 10),
-          font,
-          color: PDFLib.rgb(0,0,0),
-          maxWidth: Math.max(30, Number(field.w || .2) * width)
+        const maxWidth = Math.max(30, Number(field.w || .2) * width);
+        const boxHeight = Math.max(fontSize + 2, Number(field.h || .035) * height);
+        const lineHeight = Number(field.lineHeight || 1.15) * fontSize;
+        const nudgeY = Number(field.nudgeY || 0);
+        const align = field.align || "left";
+        const lines = wrapPdfText(value, font, fontSize, maxWidth);
+        const maxLines = Math.max(1, Math.floor(boxHeight / lineHeight) || 1);
+        lines.slice(0, maxLines).forEach((line, i) => {
+          const lineWidth = font.widthOfTextAtSize(line, fontSize);
+          let drawX = x;
+          if(align === "center") drawX = x + Math.max(0, (maxWidth - lineWidth) / 2);
+          if(align === "right") drawX = x + Math.max(0, maxWidth - lineWidth);
+          const drawY = height - yTop - fontSize - (i * lineHeight) + nudgeY;
+          page.drawText(line, {
+            x: drawX,
+            y: drawY,
+            size: fontSize,
+            font,
+            color: PDFLib.rgb(0,0,0),
+            maxWidth
+          });
         });
       });
-      const out = await pdfDoc.save();
+      const out = await pdfDoc.save({ useObjectStreams: false });
       return new Blob([out], {type:"application/pdf"});
     }
     async function loadPdfForTemplate(file, existingFields = []){
@@ -2698,6 +3150,7 @@ Request number: ${requestNumber(task)}`;
         div.style.height = (f.h * ch) + "px";
         div.textContent = f.label || f.field || "Field";
         div.addEventListener("click", ev => { ev.stopPropagation(); pdfTemplateState.selected = f.id; renderPdfFieldBoxes(); renderPdfFieldList(); });
+        div.addEventListener("pointerdown", ev => startPdfFieldDrag(ev, f.id));
         stage.appendChild(div);
       });
     }
@@ -2705,19 +3158,63 @@ Request number: ${requestNumber(task)}`;
       const list = $("pdfFieldList");
       if(!list) return;
       const fields = pdfTemplateState.fields.filter(f => Number(f.page) === Number(pdfTemplateState.page));
-      list.innerHTML = fields.length ? fields.map(f => `<div class="field-editor-row ${pdfTemplateState.selected === f.id ? "selected" : ""}" data-field-row="${f.id}"><div><label>Label</label><input data-pdf-field-prop="label" data-id="${f.id}" value="${escapeHtml(f.label || "")}" placeholder="e.g. Full name" /></div><div><label>Fill with</label><select data-pdf-field-prop="field" data-id="${f.id}">${TEMPLATE_FIELD_OPTIONS.map(([v,l]) => `<option value="${escapeHtml(v)}" ${v === f.field ? "selected" : ""}>${escapeHtml(l)}</option>`).join("")}</select></div><div><label>Size</label><input data-pdf-field-prop="fontSize" data-id="${f.id}" type="number" min="6" max="24" value="${escapeHtml(f.fontSize || 10)}" /></div><div><label>Width %</label><input data-pdf-field-prop="w" data-id="${f.id}" type="number" min="5" max="90" value="${Math.round((f.w || .24)*100)}" /></div><button class="secondary" onclick="selectPdfField('${f.id}')">Select</button><div class="span-2"><label>Fixed text / editable label</label><input data-pdf-field-prop="fixed" data-id="${f.id}" value="${escapeHtml(f.fixed || "")}" placeholder="Used for fixed text or ask-each-time" /></div></div>`).join("") : `<div class="empty">No fill boxes on this page yet. Click/tap the PDF preview or use Add field.</div>`;
+      list.innerHTML = fields.length ? fields.map(f => `<div class="field-editor-row ${pdfTemplateState.selected === f.id ? "selected" : ""}" data-field-row="${f.id}"><div><label>Label</label><input data-pdf-field-prop="label" data-id="${f.id}" value="${escapeHtml(f.label || "")}" placeholder="e.g. Full name" /></div><div><label>Fill with</label><select data-pdf-field-prop="field" data-id="${f.id}">${TEMPLATE_FIELD_OPTIONS.map(([v,l]) => `<option value="${escapeHtml(v)}" ${v === f.field ? "selected" : ""}>${escapeHtml(l)}</option>`).join("")}</select></div><div><label>X %</label><input data-pdf-field-prop="x" data-id="${f.id}" type="number" min="0" max="100" step="0.1" value="${Math.round((f.x || 0)*1000)/10}" /></div><div><label>Y %</label><input data-pdf-field-prop="y" data-id="${f.id}" type="number" min="0" max="100" step="0.1" value="${Math.round((f.y || 0)*1000)/10}" /></div><div><label>Width %</label><input data-pdf-field-prop="w" data-id="${f.id}" type="number" min="5" max="100" step="0.1" value="${Math.round((f.w || .24)*1000)/10}" /></div><div><label>Height %</label><input data-pdf-field-prop="h" data-id="${f.id}" type="number" min="1" max="30" step="0.1" value="${Math.round((f.h || .035)*1000)/10}" /></div><div><label>Size</label><input data-pdf-field-prop="fontSize" data-id="${f.id}" type="number" min="6" max="24" value="${escapeHtml(f.fontSize || 10)}" /></div><button class="secondary" onclick="selectPdfField('${f.id}')">Select</button><div><label>Align</label><select data-pdf-field-prop="align" data-id="${f.id}"><option value="left" ${(f.align || "left") === "left" ? "selected" : ""}>Left</option><option value="center" ${f.align === "center" ? "selected" : ""}>Center</option><option value="right" ${f.align === "right" ? "selected" : ""}>Right</option></select></div><div><label>Y nudge</label><input data-pdf-field-prop="nudgeY" data-id="${f.id}" type="number" min="-40" max="40" step="0.5" value="${escapeHtml(f.nudgeY || 0)}" /></div><div class="span-2"><label>Fixed text / editable label</label><input data-pdf-field-prop="fixed" data-id="${f.id}" value="${escapeHtml(f.fixed || "")}" placeholder="Used for fixed text or ask-each-time" /></div></div>`).join("") : `<div class="empty">No fill boxes on this page yet. Click/tap the PDF preview or use Add field. Drag boxes to fine-tune their position.</div>`;
       list.querySelectorAll("input[data-pdf-field-prop], select[data-pdf-field-prop]").forEach(el => {
         el.addEventListener("input", () => updatePdfFieldFromInput(el));
         el.addEventListener("change", () => updatePdfFieldFromInput(el));
       });
+    }
+    function startPdfFieldDrag(ev, id){
+      const f = pdfTemplateState.fields.find(x => x.id === id);
+      const stage = $("pdfStage");
+      if(!f || !stage) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      pdfTemplateState.selected = id;
+      const rect = stage.getBoundingClientRect();
+      const startX = ev.clientX;
+      const startY = ev.clientY;
+      const startFx = Number(f.x || 0);
+      const startFy = Number(f.y || 0);
+      const startFw = Number(f.w || .24);
+      const startFh = Number(f.h || .035);
+      const localX = startX - rect.left;
+      const localY = startY - rect.top;
+      const nearRight = Math.abs(localX - (startFx + startFw) * rect.width) < 22;
+      const nearBottom = Math.abs(localY - (startFy + startFh) * rect.height) < 22;
+      const resizing = nearRight && nearBottom;
+      function onMove(moveEv){
+        const dx = (moveEv.clientX - startX) / Math.max(1, rect.width);
+        const dy = (moveEv.clientY - startY) / Math.max(1, rect.height);
+        if(resizing){
+          f.w = Math.max(.05, Math.min(1 - startFx, startFw + dx));
+          f.h = Math.max(.015, Math.min(.3, startFh + dy));
+        } else {
+          f.x = Math.max(0, Math.min(.98, startFx + dx));
+          f.y = Math.max(0, Math.min(.98, startFy + dy));
+        }
+        renderPdfFieldBoxes();
+      }
+      function onUp(){
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+        renderPdfFieldBoxes();
+        renderPdfFieldList();
+      }
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onUp);
     }
     window.selectPdfField = function(id){ pdfTemplateState.selected = id; renderPdfFieldBoxes(); renderPdfFieldList(); };
     function updatePdfFieldFromInput(el){
       const f = pdfTemplateState.fields.find(x => x.id === el.dataset.id);
       if(!f) return;
       const prop = el.dataset.pdfFieldProp;
-      if(prop === "w") f.w = Math.max(.05, Math.min(.9, Number(el.value || 24)/100));
+      if(prop === "w") f.w = Math.max(.05, Math.min(1, Number(el.value || 24)/100));
+      else if(prop === "h") f.h = Math.max(.01, Math.min(.3, Number(el.value || 3.5)/100));
+      else if(prop === "x") f.x = Math.max(0, Math.min(.98, Number(el.value || 0)/100));
+      else if(prop === "y") f.y = Math.max(0, Math.min(.98, Number(el.value || 0)/100));
       else if(prop === "fontSize") f.fontSize = Number(el.value || 10);
+      else if(prop === "nudgeY") f.nudgeY = Number(el.value || 0);
       else f[prop] = el.value;
       if(prop === "field" && !f.label){ f.label = TEMPLATE_FIELD_OPTIONS.find(([v]) => v === el.value)?.[1] || el.value; }
       renderPdfFieldBoxes();
@@ -2950,6 +3447,118 @@ Request number: ${requestNumber(task)}`;
         return true;
       }).sort((a,b) => ((a[basis] || a.taskDate) || "").localeCompare((b[basis] || b.taskDate) || ""));
     }
+    function startOfWeekISO(date = new Date()){
+      const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const day = (d.getDay() + 6) % 7;
+      d.setDate(d.getDate() - day);
+      return d.toISOString().slice(0,10);
+    }
+    function addDaysISO(iso, days){
+      const d = new Date(iso + "T00:00:00");
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0,10);
+    }
+    function monthStartISO(date = new Date()){ return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-01`; }
+    function monthEndISO(date = new Date()){
+      const d = new Date(date.getFullYear(), date.getMonth()+1, 0);
+      return d.toISOString().slice(0,10);
+    }
+    function setStatsPresetDates(){
+      const preset = $("statsPreset")?.value || "this_week";
+      const now = new Date();
+      let start = "", end = "";
+      if(preset === "this_week"){ start = startOfWeekISO(now); end = addDaysISO(start, 6); }
+      if(preset === "this_month"){ start = monthStartISO(now); end = monthEndISO(now); }
+      if(preset === "this_year"){ const fy = financialYearRange(now); start = fy.start; end = fy.end; }
+      if(preset === "last_30"){ end = todayISO(); start = addDaysISO(end, -29); }
+      if(preset === "last_90"){ end = todayISO(); start = addDaysISO(end, -89); }
+      if(preset === "all"){ start = ""; end = ""; }
+      if(preset !== "custom"){
+        if($("statsStart")) $("statsStart").value = start;
+        if($("statsEnd")) $("statsEnd").value = end;
+      }
+    }
+    function uniqueSorted(values){ return [...new Set(values.map(v => String(v || "").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b)); }
+    function renderStatsFilterOptions(){
+      const clientSel = $("statsClient"), jobSel = $("statsJob");
+      if(!clientSel || !jobSel) return;
+      const oldClient = clientSel.value || "all", oldJob = jobSel.value || "all";
+      clientSel.innerHTML = `<option value="all">All clients</option>` + uniqueSorted(tasks.map(t=>t.clientName)).map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+      jobSel.innerHTML = `<option value="all">All job titles</option>` + uniqueSorted(tasks.map(t=>t.jobTitle)).map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+      if([...clientSel.options].some(o=>o.value===oldClient)) clientSel.value = oldClient;
+      if([...jobSel.options].some(o=>o.value===oldJob)) jobSel.value = oldJob;
+    }
+    function filteredStatsTasks(){
+      const basis = $("statsBasis")?.value || "taskDate";
+      const start = $("statsStart")?.value || "";
+      const end = $("statsEnd")?.value || "";
+      const client = $("statsClient")?.value || "all";
+      const job = $("statsJob")?.value || "all";
+      const pay = $("statsPayment")?.value || "all";
+      return tasks.filter(t => {
+        const date = t[basis] || (basis !== "taskDate" ? "" : t.taskDate);
+        if(start && (!date || date < start)) return false;
+        if(end && (!date || date > end)) return false;
+        if(client !== "all" && t.clientName !== client) return false;
+        if(job !== "all" && t.jobTitle !== job) return false;
+        if(pay === "cancelled" && t.taskStatus !== "cancelled") return false;
+        if(pay !== "all" && pay !== "cancelled" && t.paymentStatus !== pay) return false;
+        return true;
+      });
+    }
+    function statsKpi(label, value){ return `<div class="mini-stat"><div class="value">${value}</div><div class="label">${label}</div></div>`; }
+    function renderBarChart(el, rows, labelKey, valueKey, valueFormatter=(v)=>v){
+      if(!el) return;
+      if(!rows.length){ el.innerHTML = `<div class="empty">No data for this filter.</div>`; return; }
+      const max = Math.max(...rows.map(r=>Number(r[valueKey] || 0)), 1);
+      el.innerHTML = rows.map(r => `<div class="bar-row"><div title="${escapeHtml(r[labelKey])}">${escapeHtml(r[labelKey])}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.max(2, Number(r[valueKey] || 0)/max*100)}%"></div></div><div><strong>${escapeHtml(valueFormatter(r[valueKey], r))}</strong></div></div>`).join("");
+    }
+    function renderTrendChart(el, rows, valueFormatter=(v)=>v){
+      if(!el) return;
+      if(!rows.length){ el.innerHTML = `<div class="empty">No paid payments in this filter.</div>`; return; }
+      const max = Math.max(...rows.map(r=>Number(r.value || 0)), 1);
+      el.innerHTML = `<div class="line-bars">${rows.map(r => `<div class="line-bar"><div class="line-bar-fill" title="${escapeHtml(valueFormatter(r.value))}" style="height:${Math.max(2, Number(r.value || 0)/max*135)}px"></div><div class="line-bar-label">${escapeHtml(r.label)}</div></div>`).join("")}</div>`;
+    }
+    function renderStats(){
+      if(!$("statsSummary")) return;
+      renderStatsFilterOptions();
+      const list = filteredStatsTasks();
+      const active = list.filter(t => t.taskStatus !== "cancelled");
+      const completed = active.filter(t => t.taskStatus === "completed");
+      const paid = active.filter(t => t.paymentStatus === "paid");
+      const requested = active.filter(t => t.paymentStatus === "requested");
+      const notRequested = active.filter(t => t.taskStatus === "completed" && t.paymentStatus === "not_requested");
+      const cancelled = list.filter(t => t.taskStatus === "cancelled");
+      const paidAmount = paid.reduce((sum,t)=>sum+totalAmount(t),0);
+      const unpaidAmount = active.filter(t => t.taskStatus === "completed" && t.paymentStatus !== "paid").reduce((sum,t)=>sum+totalAmount(t),0);
+      const travel = active.reduce((sum,t)=>sum+travelAmount(t),0);
+      const miles = active.reduce((sum,t)=>sum+(t.claimTravel === "yes" ? Number(t.travelMiles || 0) : 0),0);
+      const avg = active.length ? active.reduce((sum,t)=>sum+totalAmount(t),0)/active.length : 0;
+      const cur = active[0]?.currency || settings.defaultCurrency || "GBP";
+      $("statsSummary").innerHTML = [statsKpi("Total tasks", list.length), statsKpi("Completed", completed.length), statsKpi("Paid amount", money(paidAmount, cur)), statsKpi("Outstanding", money(unpaidAmount, cur)), statsKpi("Payment requested", requested.length), statsKpi("Awaiting request", notRequested.length), statsKpi("Cancelled", cancelled.length), statsKpi("Travel claimed", `${money(travel, cur)} / ${miles.toFixed(1)} mi`), statsKpi("Average task value", money(avg, cur))].join("");
+      const statusRows = [{label:"Upcoming", count:active.filter(t=>t.taskStatus==="upcoming").length},{label:"Completed, not requested", count:notRequested.length},{label:"Payment requested", count:requested.length},{label:"Paid", count:paid.length},{label:"Cancelled", count:cancelled.length}].filter(r=>r.count>0);
+      renderBarChart($("statsStatusChart"), statusRows, "label", "count", v=>String(v));
+      const byClient = {};
+      active.forEach(t => { const k = t.clientName || "Client not set"; byClient[k] = (byClient[k] || 0) + totalAmount(t); });
+      const clientRows = Object.entries(byClient).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value).slice(0,8);
+      renderBarChart($("statsClientChart"), clientRows, "label", "value", v=>money(v, cur));
+      const byMonth = {};
+      paid.forEach(t => { const k = (t.paidDate || t.taskDate || "").slice(0,7); if(k) byMonth[k] = (byMonth[k] || 0) + totalAmount(t); });
+      const trend = Object.entries(byMonth).sort(([a],[b])=>a.localeCompare(b)).map(([k,value])=>({label:k.slice(5)+"/"+k.slice(2,4), value}));
+      renderTrendChart($("statsTrendChart"), trend, v=>money(v, cur));
+      const clientDetail = Object.entries(byClient).map(([client, amount]) => {
+        const rows = active.filter(t=> (t.clientName || "Client not set") === client);
+        const paidRows = rows.filter(t=>t.paymentStatus==="paid");
+        const unpaidRows = rows.filter(t=>t.taskStatus==="completed" && t.paymentStatus!=="paid");
+        return `<tr><td>${escapeHtml(client)}</td><td>${rows.length}</td><td>${paidRows.length}</td><td>${unpaidRows.length}</td><td style="text-align:right">${money(amount, cur)}</td></tr>`;
+      }).join("");
+      $("statsDetailTable").innerHTML = clientDetail ? `<table><tr><th>Client</th><th>Tasks</th><th>Paid</th><th>Unpaid</th><th style="text-align:right">Total value</th></tr>${clientDetail}</table>` : `<div class="empty">No detailed rows for this filter.</div>`;
+    }
+    ["statsPreset", "statsClient", "statsJob", "statsPayment", "statsStart", "statsEnd", "statsBasis"].forEach(id => {
+      setTimeout(() => $(id)?.addEventListener("change", () => { if(id === "statsPreset") setStatsPresetDates(); renderStats(); }), 0);
+    });
+    setTimeout(() => { if($("refreshStatsBtn")) $("refreshStatsBtn").addEventListener("click", renderStats); setStatsPresetDates(); }, 0);
+
     function renderExportPreview(){
       const list = currentExportTasks();
       const total = list.reduce((s,t) => s + totalAmount(t), 0);
@@ -2968,8 +3577,8 @@ Request number: ${requestNumber(task)}`;
     }
     function downloadCsv(){
       const list = currentExportTasks();
-      const headers = ["Task date","Start","End","Job title","Task title","Client","Contact","Email","Phone","Location","Agreed fee","Currency","Claim travel","Travel miles","Mileage rate","Travel amount","Total amount","Reference","Task status","Payment status","Completed date","Payment requested date","Paid date","Cancelled date","Cancellation reason","Payment terms","Notes"];
-      const rows = list.map(t => [t.taskDate,t.startTime,t.endTime,t.jobTitle || "",t.taskTitle,t.clientName,t.contactName,t.clientEmail,t.clientPhone,t.location,t.feeAmount,t.currency,t.claimTravel || "no",t.travelMiles || "",t.travelRate || "",travelAmount(t).toFixed(2),totalAmount(t).toFixed(2),t.referenceNo,t.taskStatus,t.paymentStatus,t.completedDate,t.paymentRequestedDate,t.paidDate,t.cancelledDate || "",t.cancellationReason || "",t.paymentTerms,t.notes]);
+      const headers = ["Task date","Start","End","Job title","Task title","Client","Contact","Email","Additional recipients","Payment link","Request actions","Extra fields","Phone","Location","Agreed fee","Currency","Claim travel","Travel miles","Mileage rate","Travel amount","Total amount","Reference","Task status","Payment status","Completed date","Payment requested date","Paid date","Cancelled date","Cancellation reason","Payment terms","Notes"];
+      const rows = list.map(t => [t.taskDate,t.startTime,t.endTime,t.jobTitle || "",t.taskTitle,t.clientName,t.contactName,t.clientEmail,t.additionalRecipients || "",t.paymentLink || "",t.paymentActions ? Object.entries(t.paymentActions).filter(([k,v])=>v).map(([k])=>k).join(";") : "",t.customFields || "",t.clientPhone,t.location,t.feeAmount,t.currency,t.claimTravel || "no",t.travelMiles || "",t.travelRate || "",travelAmount(t).toFixed(2),totalAmount(t).toFixed(2),t.referenceNo,t.taskStatus,t.paymentStatus,t.completedDate,t.paymentRequestedDate,t.paidDate,t.cancelledDate || "",t.cancellationReason || "",t.paymentTerms,t.notes]);
       const csv = [headers, ...rows].map(r => r.map(csvEscape).join(",")).join("\n");
       downloadBlob(`task-export-${todayISO()}.csv`, csv, "text/csv;charset=utf-8");
       showToast("CSV exported");
@@ -2980,6 +3589,7 @@ Request number: ${requestNumber(task)}`;
         ...task,
         id: task.id || uid(),
         jobTitle: task.jobTitle || "",
+        additionalRecipients: task.additionalRecipients || "",
         cancellationReason: task.cancellationReason || "",
         cancelledDate: task.cancelledDate || "",
         createdAt: task.createdAt || task.updatedAt || now,
@@ -3000,7 +3610,7 @@ Request number: ${requestNumber(task)}`;
       }
       return {
         app:"Task Payment Tracker",
-        version:"1.16",
+        version:"1.18",
         syncFormat:"complete-device-sync-json",
         exportedAt:new Date().toISOString(),
         tasks: tasks.map(normaliseTaskForSync),
@@ -3088,7 +3698,7 @@ Request number: ${requestNumber(task)}`;
           result = mergeImportedTasks(importedTasks);
         }
         if(settingsMode === "import" && data.settings){
-          settings = {...{defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14"}, ...data.settings};
+          settings = {...{defaultCurrency:"GBP", mileageRate:"0.45", dueDays:"14", graceHours:"1"}, ...data.settings};
           saveSettings();
         }
         if(Array.isArray(data.templates)){
@@ -3321,7 +3931,7 @@ Request number: ${requestNumber(task)}`;
       const result = mergeImportedTasks(importedTasks);
       if((options.importSettings || cloudConfig().importSettings) === 'import' && data.settings){
         const existingCloud = settings.cloudSync || {};
-        settings = {...{defaultCurrency:'GBP', mileageRate:'0.45', dueDays:'14'}, ...data.settings, cloudSync: existingCloud};
+        settings = {...{defaultCurrency:'GBP', mileageRate:'0.45', dueDays:'14', graceHours:'1'}, ...data.settings, cloudSync: existingCloud};
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       }
       if(Array.isArray(data.templates)){
@@ -3401,9 +4011,15 @@ Request number: ${requestNumber(task)}`;
       const paymentOverdue = active.filter(isPaymentOverdue).sort((a,b)=>overdueDays(b)-overdueDays(a));
       return {dueToday, dueSoon, passedIncomplete, payNotRequested, paymentOverdue};
     }
+    function alertTaskActions(t){
+      if(isPastIncomplete(t)) return `<button type="button" class="success" onclick="markCompleted('${t.id}'); closeLaunchAlerts();">Mark completed</button><button type="button" class="secondary" onclick="rescheduleTask('${t.id}'); closeLaunchAlerts();">Reschedule</button><button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View</button>`;
+      if(needsPaymentRequest(t)) return `${t.paymentLink ? `<button type="button" class="secondary" onclick="openPaymentLinkFor('${t.id}'); closeLaunchAlerts();">Open form</button>` : ""}<button type="button" class="gold" onclick="openPaymentFor('${t.id}'); closeLaunchAlerts();">Request pay</button><button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View</button>`;
+      if(isRequestedUnpaid(t)) return `<button type="button" class="success" onclick="markPaid('${t.id}'); closeLaunchAlerts();">Mark paid</button>${t.paymentLink ? `<button type="button" class="secondary" onclick="openPaymentLinkFor('${t.id}'); closeLaunchAlerts();">Open form</button>` : ""}<button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View</button>`;
+      return `<button type="button" class="secondary" onclick="openTaskFromAlert('${t.id}')">View task</button>`;
+    }
     function alertRow(title, items, kind, description){
       if(!items.length) return "";
-      const sample = items.slice(0,4).map(t => `<button type="button" class="alert-task-button" onclick="openTaskFromAlert('${t.id}')">${escapeHtml(t.taskTitle || 'Untitled task')} · ${escapeHtml(t.clientName || 'Client not set')}<span class="small">${fmtDateTime(t.taskDate, t.startTime, t.endTime)} · ${money(totalAmount(t), t.currency)}</span></button>`).join("");
+      const sample = items.slice(0,4).map(t => `<div class="alert-item-card"><button type="button" class="alert-main" onclick="openTaskFromAlert('${t.id}')">${escapeHtml(t.taskTitle || 'Untitled task')} · ${escapeHtml(t.clientName || 'Client not set')}<span class="small">${fmtDateTime(t.taskDate, t.startTime, t.endTime)} · ${money(totalAmount(t), t.currency)}</span></button><div class="mini-actions">${alertTaskActions(t)}</div></div>`).join("");
       const more = items.length > 4 ? `<div class="small muted">+ ${items.length - 4} more. Choose View on dashboard to see the full list.</div>` : "";
       return `<div class="alert-row ${kind}">
         <div style="flex:1;min-width:0">
@@ -3435,7 +4051,7 @@ Request number: ${requestNumber(task)}`;
       const total = alerts.dueToday.length + alerts.passedIncomplete.length + alerts.payNotRequested.length + alerts.paymentOverdue.length + alerts.dueSoon.length;
       if(!total) return;
       const content = [
-        alertRow("Task date passed", alerts.passedIncomplete, "danger", "Mark completed or cancel/remove these tasks."),
+        alertRow("Task time passed", alerts.passedIncomplete, "danger", `Scheduled time plus ${settings.graceHours || 1} hour grace period has passed. Update status now.`),
         alertRow("Payment due", alerts.paymentOverdue, "danger", `Unpaid for ${paymentDueDays({})}+ days after completion/request.`),
         alertRow("Payment not requested", alerts.payNotRequested, "warning", "Completed tasks are waiting for a payment request."),
         alertRow("Tasks today", alerts.dueToday, "info", "These tasks are scheduled for today."),
@@ -3459,6 +4075,7 @@ Request number: ${requestNumber(task)}`;
       renderTasks();
       renderRequestOptions();
       renderTemplateManager();
+      renderStats();
       renderExportPreview();
       updateCloudSyncUi();
     }
