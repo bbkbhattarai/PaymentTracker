@@ -552,11 +552,15 @@
     .copy-assist-summary .mini-stat{padding:10px;background:#fbf9ff}
     .copy-assist-section{border:1px solid var(--line);border-radius:16px;background:#fff;margin:12px 0;overflow:hidden}
     .copy-assist-section h3{margin:0;padding:10px 12px;background:#fbf9ff;border-bottom:1px solid var(--line);font-size:1rem}
-    .copy-row{display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px dashed var(--line)}
+    .copy-row{display:grid;grid-template-columns:auto 150px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px dashed var(--line)}
     .copy-row:first-of-type{border-top:0}
     .copy-row .copy-label{font-weight:800;color:#493f5e;font-size:.88rem}
     .copy-row .copy-value{white-space:pre-wrap;word-break:break-word;color:var(--text);font-size:.9rem}
     .copy-row button{padding:7px 9px;min-height:32px;font-size:.82rem}
+
+    .copy-row .copy-select{display:flex;align-items:center;justify-content:center;margin:0}
+    .copy-row .copy-select input{width:auto;margin:0}
+    .workspace-note{background:var(--info-bg);border:1px solid rgba(24,90,188,.18);color:#123b70;border-radius:14px;padding:11px;margin:10px 0;font-size:.9rem}
     .copy-assist-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
     .copy-assist-actions button{min-height:34px;padding:8px 10px;font-size:.85rem}
 
@@ -908,7 +912,7 @@ match_number = 12345"></textarea>
             <h3>Task calendar entry</h3>
             <p class="muted">The calendar button downloads an .ics file for the task only. Payment follow-up is handled inside the dashboard, not in your calendar.</p>
             <h3>Email/payment flow</h3>
-            <p class="muted">After completion, generate a payment request, then choose the general format, Club Academy Scotland form, or a saved template. v19 can address drafts to multiple saved recipients, open saved form/payment links, and use flexible request actions. Use Share file, Download, Print/Save PDF, Copy email body, Email draft, external form, or the optional .eml package.</p>
+            <p class="muted">After completion, generate a payment request, then choose the general format, Club Academy Scotland form, or a saved template. v20 can address drafts to multiple saved recipients, open saved form/payment links in a separate workspace, and use flexible request actions. Use Share file, Download, Print/Save PDF, Copy email body, Email draft, external form, or the optional .eml package.</p>
           </div>
         </div>
       </section>
@@ -997,7 +1001,7 @@ Kind regards,
               <button class="secondary" id="openPaymentLinkBtn">Form assist</button>
             </div>
             <div id="emailFlowNote" class="notice request-helper small" style="margin-top:12px"></div>
-            <p class="muted small">Browser email drafts cannot reliably attach generated files. v19 keeps the improved PDF/print output, but attaching still depends on the email app. Best flow: Share file first on iPhone, or open the clean print/PDF file and attach manually. The .eml option is experimental for Mac/desktop testing.</p>
+            <p class="muted small">Browser email drafts cannot reliably attach generated files. v20 keeps the improved PDF/print output, but attaching still depends on the email app. Best flow: Share file first on iPhone, or open the clean print/PDF file and attach manually. The .eml option is experimental for Mac/desktop testing.</p>
           </div>
           <div class="card">
             <div id="requestPreview" class="request-preview"></div>
@@ -1011,7 +1015,7 @@ Kind regards,
           <div class="card">
             <h2>Template Builder</h2>
             <div class="notice">
-              v19 improves PDF output, email handling and form assist. HTML/Word-style requests now open in a clean print-only window for Save as PDF, PDF overlay fields are easier to position, and tasks can store multiple named email recipients for payment drafts.
+              v20 improves PDF output, email handling and form assist with a separate copy workspace. HTML/Word-style requests now open in a clean print-only window for Save as PDF, PDF overlay fields are easier to position, and tasks can store multiple named email recipients for payment drafts.
             </div>
             <div class="library-note">
               First use needs internet access for the free browser libraries used for DOCX/PDF processing. Saved templates stay in your app data and can be backed up by JSON or synced through the Google Drive bridge if configured.
@@ -1238,7 +1242,7 @@ Kind regards,
             <p class="muted small">Merge keeps the newest version of each task using its updated timestamp. If you deleted a task on one device and want the deletion reflected everywhere, use Replace from the device that has the correct final list.</p>
             <h3 style="margin-top:22px">Cloud master JSON sync beta</h3>
             <div class="notice">
-              Optional v16/v19 feature for one user across phone and laptop. Host the app on GitHub Pages, then use a small Google Apps Script bridge to read/write one master JSON file in your Google Drive. Keep manual JSON backup as a safety fallback.
+              Optional v16/v20 feature for one user across phone and laptop. Host the app on GitHub Pages, then use a small Google Apps Script bridge to read/write one master JSON file in your Google Drive. Keep manual JSON backup as a safety fallback.
             </div>
             <div class="form-grid" style="margin-top:10px">
               <div class="span-2">
@@ -1279,7 +1283,7 @@ Kind regards,
             </div>
             <div id="cloudSyncStatus" class="cloud-status small"><span class="cloud-dot"></span><span>Cloud sync is not configured.</span></div>
             <div class="library-note">
-              v19 keeps the free Apps Script bridge for one-user phone/laptop sync. It is best for your own devices, not for multiple separate users. Keep JSON backups while testing.
+              v20 keeps the free Apps Script bridge for one-user phone/laptop sync. It is best for your own devices, not for multiple separate users. Keep JSON backups while testing.
             </div>
           </div>
           <div class="card">
@@ -1332,11 +1336,13 @@ Kind regards,
       </div>
       <div id="formAssistContent"></div>
       <div class="btn-row" style="margin-top:14px">
-        <button id="openFormAssistLinkBtn" type="button">Open form/link</button>
+        <button id="openFormAssistLinkBtn" type="button">Open form workspace</button>
+        <button class="secondary" id="openFormOnlyBtn" type="button">Open form only</button>
+        <button class="secondary" id="copySelectedAssistBtn" type="button">Copy selected</button>
         <button class="success" id="markFormAssistRequestedBtn" type="button">Mark requested</button>
         <button class="secondary" id="closeFormAssistBottomBtn" type="button">Close</button>
       </div>
-      <p class="muted small" style="margin-top:10px">Opening a form/link no longer marks payment as requested automatically. Use Mark requested after you have submitted the form or sent the request.</p>
+      <p class="muted small" style="margin-top:10px">Open form workspace keeps the copy helper available in a separate tab/window, then opens the organisation form separately. Opening a form/link no longer marks payment as requested automatically. Use Mark requested after you have submitted the form or sent the request.</p>
     </div>
   </div>
 
@@ -2171,7 +2177,7 @@ Kind regards,
       const index = formAssistCopyValues.push({label, value:text, section}) - 1;
       if(!formAssistSectionValues[section]) formAssistSectionValues[section] = [];
       formAssistSectionValues[section].push(`${label}: ${text}`);
-      return `<div class="copy-row"><div class="copy-label">${escapeHtml(label)}</div><div class="copy-value">${escapeHtml(text)}</div><button type="button" class="secondary copy-assist-btn" data-copy-index="${index}">Copy</button></div>`;
+      return `<div class="copy-row"><label class="copy-select" title="Select for Copy selected"><input type="checkbox" class="assist-select" data-copy-index="${index}" checked /></label><div class="copy-label">${escapeHtml(label)}</div><div class="copy-value">${escapeHtml(text)}</div><button type="button" class="secondary copy-assist-btn" data-copy-index="${index}">Copy</button></div>`;
     }
     function formAssistSection(title, rows){
       const body = rows.filter(Boolean).join("");
@@ -2250,8 +2256,9 @@ Kind regards,
         <button type="button" class="secondary" onclick="copyAssistBundle('payment')">Copy payment</button>
         <button type="button" class="secondary" onclick="copyAssistBundle('bank')">Copy bank</button>
         <button type="button" class="secondary" onclick="copyAssistBundle('all')">Copy all</button>
+        <button type="button" class="secondary" onclick="copySelectedAssistFields()">Copy selected</button>
       </div>`;
-      const intro = `<div class="notice">Open the organisation form, then use these copy buttons to paste the exact task, payment and bank details. This is designed for forms that cannot be prefilled by the app.</div>`;
+      const intro = `<div class="notice">Use <strong>Open form workspace</strong> when you need to copy/paste into an organisation form. It opens a separate helper tab/window so the copy options stay available while the form opens separately.</div>`;
       $("formAssistContent").innerHTML = intro + summary + quickActions +
         formAssistSection("Task details", taskRows) +
         formAssistSection("Payment details", paymentRows) +
@@ -2260,6 +2267,7 @@ Kind regards,
         formAssistSection("Form/link", linkRows) +
         formAssistSection("Custom fields", customRows);
       $("openFormAssistLinkBtn").disabled = !task.paymentLink;
+      if($("openFormOnlyBtn")) $("openFormOnlyBtn").disabled = !task.paymentLink;
     }
     window.openPaymentLinkFor = function(id){
       const t = tasks.find(x => x.id === id);
@@ -2273,17 +2281,74 @@ Kind regards,
       $("formAssistBackdrop").classList.add("hidden");
       $("formAssistBackdrop").setAttribute("aria-hidden", "true");
     }
-    function openActiveFormAssistLink(){
+    function assistWorkspaceHtml(task, link, rows){
+      const safeTitle = escapeHtml(task.taskTitle || task.jobTitle || "Payment form assist");
+      const rowsJson = JSON.stringify(rows.map(r => ({label:r.label, value:r.value, section:r.section}))).replace(/</g, "\\u003c");
+      const linkJson = JSON.stringify(link || "").replace(/</g, "\\u003c");
+      return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${safeTitle} - form assist</title>
+      <style>
+        :root{--brand:#4B0082;--line:#ddd6eb;--bg:#f6f4fb;--success:#087443;--gold:#FFD700;--text:#1f1b2e}
+        *{box-sizing:border-box}
+        body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.45;padding:14px 14px 80px}
+        .wrap{max-width:780px;margin:0 auto}.hero{background:linear-gradient(135deg,var(--brand),#251045);color:#fff;border-radius:22px;padding:18px;margin-bottom:12px}.hero h1{margin:0 0 6px;font-size:1.35rem}.hero p{margin:0;color:rgba(255,255,255,.82)}
+        .actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.actions.sticky{position:sticky;top:0;background:rgba(246,244,251,.94);padding:10px 0;backdrop-filter:blur(12px);z-index:2}
+        button{border:0;background:var(--brand);color:#fff;border-radius:12px;padding:10px 12px;font:inherit;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:40px}button.secondary{background:#fff;color:var(--brand);border:1px solid var(--line)}button.gold{background:var(--gold);color:#271b00}
+        .notice{background:#fff9df;border:1px solid #f2dda1;color:#5a4500;border-radius:14px;padding:11px;margin:10px 0}.section{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:12px 0}.section h2{margin:0;background:#fbf9ff;border-bottom:1px solid var(--line);padding:10px 12px;font-size:1rem}
+        .row{display:grid;grid-template-columns:auto 150px 1fr auto;gap:10px;align-items:center;padding:9px 12px;border-top:1px dashed var(--line)}.row:first-of-type{border-top:0}.row input{width:auto}.label{font-weight:850;color:#493f5e;font-size:.88rem}.value{white-space:pre-wrap;word-break:break-word;font-size:.9rem}
+        .toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#1f1b2e;color:#fff;border-radius:999px;padding:10px 14px;font-size:.9rem;opacity:0;transition:opacity .2s}.toast.show{opacity:1}
+        @media(max-width:640px){.row{grid-template-columns:auto 1fr}.value{grid-column:2}.row button{grid-column:2;justify-self:start}.hero{border-radius:18px}}
+      </style></head><body><div class="wrap"><div class="hero"><h1>Form/payment assist</h1><p>${safeTitle}</p></div><div class="notice">Keep this helper open, then open the organisation form in another tab/window. Copy individual fields, or tick only the fields the form asks for and use Copy selected.</div><div class="actions sticky"><button id="openFormBtn" class="gold">Open organisation form</button><button id="copySelectedBtn" class="secondary">Copy selected</button><button id="selectAllBtn" class="secondary">Select all</button><button id="selectNoneBtn" class="secondary">Clear selection</button></div><div id="rows"></div><div class="toast" id="toast">Copied</div></div><script>
+      const assistRows = ${rowsJson};
+      const formLink = ${linkJson};
+      const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const names = {task:'Task details',payment:'Payment details',bank:'Bank details',recipients:'Recipients',link:'Form/link',custom:'Custom fields'};
+      const groups = assistRows.reduce((acc,r)=>{(acc[r.section] ||= []).push(r); return acc;}, {});
+      let html=''; Object.entries(groups).forEach(([section,rows])=>{ html += '<div class="section"><h2>'+esc(names[section]||section)+'</h2>'; rows.forEach((r)=>{ const global=assistRows.indexOf(r); html += '<div class="row"><input type="checkbox" class="sel" data-index="'+global+'" checked><div class="label">'+esc(r.label)+'</div><div class="value">'+esc(r.value)+'</div><button class="secondary copy-one" data-index="'+global+'">Copy</button></div>'; }); html += '</div>'; });
+      document.getElementById('rows').innerHTML = html || '<div class="notice">No details found.</div>';
+      function bundle(indices){ return indices.map(i => assistRows[i]).filter(Boolean).map(r => r.label+': '+r.value).join('\n'); }
+      async function copyText(text){ if(!text) return; try{ await navigator.clipboard.writeText(text); }catch(e){ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); } const t=document.getElementById('toast'); t.textContent='Copied'; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1300); }
+      document.addEventListener('click', e => { const one=e.target.closest('.copy-one'); if(one) copyText(assistRows[Number(one.dataset.index)]?.value || ''); });
+      document.getElementById('copySelectedBtn').addEventListener('click',()=>{ const idx=[...document.querySelectorAll('.sel:checked')].map(x=>Number(x.dataset.index)); copyText(bundle(idx)); });
+      document.getElementById('selectAllBtn').addEventListener('click',()=>document.querySelectorAll('.sel').forEach(x=>x.checked=true));
+      document.getElementById('selectNoneBtn').addEventListener('click',()=>document.querySelectorAll('.sel').forEach(x=>x.checked=false));
+      document.getElementById('openFormBtn').addEventListener('click',()=>{ if(!formLink){ alert('No form/link saved for this task.'); return; } window.open(formLink, '_blank'); });
+      <\/script></body></html>`;
+    }
+    function openAssistWorkspace(){
+      const t = tasks.find(x => x.id === activeFormAssistTaskId);
+      if(!t || !t.paymentLink){ showToast("No form/link saved for this task"); return; }
+      const link = buildPaymentLink(t);
+      const rows = formAssistCopyValues.slice();
+      const win = window.open("", "_blank");
+      if(!win){ showToast("Popup blocked. Allow popups or use the copy panel here."); return; }
+      win.document.open();
+      win.document.write(assistWorkspaceHtml(t, link, rows));
+      win.document.close();
+      t.formAssistWorkspaceOpenedAt = new Date().toISOString();
+      t.updatedAt = new Date().toISOString();
+      saveTasks();
+      showToast("Form workspace opened in a new tab/window");
+    }
+    function openActiveFormOnly(){
       const t = tasks.find(x => x.id === activeFormAssistTaskId);
       if(!t || !t.paymentLink){ showToast("No form/link saved for this task"); return; }
       const url = buildPaymentLink(t);
       try{
-        window.open(url, "_blank", "noopener");
+        window.open(url, "_blank");
         t.formOpenedAt = new Date().toISOString();
         t.updatedAt = new Date().toISOString();
         saveTasks();
         showToast("Form/link opened. Mark requested after submitting.");
       }catch(e){ showToast("Could not open form/link"); }
+    }
+    function copySelectedAssistFields(){
+      const selected = Array.from(document.querySelectorAll("#formAssistContent .assist-select:checked")).map(cb => Number(cb.dataset.copyIndex));
+      const text = selected.map(i => formAssistCopyValues[i]).filter(Boolean).map(item => `${item.label}: ${item.value}`).join("\n");
+      if(!text){ showToast("Select at least one field to copy"); return; }
+      copyText(text).then(() => showToast("Selected details copied")).catch(() => showToast("Could not copy"));
+    }
+    function openActiveFormAssistLink(){
+      openAssistWorkspace();
     }
     function markActiveFormAssistRequested(){
       const t = tasks.find(x => x.id === activeFormAssistTaskId);
@@ -2296,6 +2361,7 @@ Kind regards,
       showToast("Marked as payment requested");
     }
     window.copyAssistBundle = copyAssistBundle;
+    window.copySelectedAssistFields = copySelectedAssistFields;
 
     window.openPaymentFor = function(id){
       selectedRequestTaskId = id;
@@ -4226,6 +4292,8 @@ Request number: ${requestNumber(task)}`;
       if(btn) copyAssistValue(btn.dataset.copyIndex);
     });
     $("openFormAssistLinkBtn")?.addEventListener("click", openActiveFormAssistLink);
+    $("openFormOnlyBtn")?.addEventListener("click", openActiveFormOnly);
+    $("copySelectedAssistBtn")?.addEventListener("click", copySelectedAssistFields);
     $("markFormAssistRequestedBtn")?.addEventListener("click", markActiveFormAssistRequested);
 
     function renderAll(){
